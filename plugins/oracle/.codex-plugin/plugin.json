@@ -1,0 +1,44 @@
+{
+  "name": "oracle",
+  "version": "0.1.0",
+  "description": "Ask ChatGPT Pro from Codex through the user's logged-in Chrome session.",
+  "author": {
+    "name": "PedroAVJ",
+    "url": "https://github.com/PedroAVJ"
+  },
+  "homepage": "https://github.com/PedroAVJ/swe-stack/tree/main/plugins/oracle",
+  "repository": "https://github.com/PedroAVJ/swe-stack",
+  "license": "MIT",
+  "keywords": [
+    "oracle",
+    "chatgpt",
+    "pro",
+    "second-opinion",
+    "computer-use"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Oracle",
+    "shortDescription": "Ask ChatGPT Pro through Chrome",
+    "longDescription": "Use Computer Use to operate the user's logged-in Chrome ChatGPT session, select a Pro or extended-thinking model, ask one focused second-opinion prompt, and summarize the useful answer back into Codex.",
+    "developerName": "PedroAVJ",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Browser",
+      "Reasoning"
+    ],
+    "websiteURL": "https://chatgpt.com/",
+    "privacyPolicyURL": "https://openai.com/policies/privacy-policy/",
+    "termsOfServiceURL": "https://openai.com/policies/terms-of-use/",
+    "brandColor": "#0EA37F",
+    "composerIcon": "./assets/oracle-icon.svg",
+    "logo": "./assets/oracle-icon.svg",
+    "screenshots": [],
+    "defaultPrompt": [
+      "Ask Oracle for a second opinion",
+      "Run this decision by ChatGPT Pro",
+      "Use Oracle to sanity-check this implementation"
+    ]
+  }
+}

@@ -17,6 +17,7 @@ The stack is intentionally practical:
 
 | Module | Status | Description |
 | --- | --- | --- |
+| [`plugins/oracle`](./plugins/oracle) | Open | Codex-first second-opinion workflow through the user's logged-in ChatGPT Pro session in Chrome. |
 | [`plugins/whatsapp`](./plugins/whatsapp) | Open | WhatsApp bridge, SQLite-backed reads, media/context tools, reviewable drafts, and guarded sends for Codex and Claude Code. |
 
 More modules will land here as the custom stack gets cleaned up for public use.
@@ -41,16 +42,17 @@ Git ref: main
 Sparse paths:
 .agents/plugins
 plugins/whatsapp
+plugins/oracle
 ```
 
 Or from the CLI:
 
 ```bash
-codex plugin marketplace add PedroAVJ/swe-stack --ref main --sparse .agents/plugins --sparse plugins/whatsapp
+codex plugin marketplace add PedroAVJ/swe-stack --ref main --sparse .agents/plugins --sparse plugins/whatsapp --sparse plugins/oracle
 codex plugin marketplace upgrade
 ```
 
-Leave sparse paths blank if you want Codex to fetch the whole marketplace repo. The sparse paths above are the minimal set for the marketplace manifest plus the current WhatsApp plugin.
+Leave sparse paths blank if you want Codex to fetch the whole marketplace repo. The sparse paths above are the minimal set for the marketplace manifest plus the current plugins.
 
 ### Develop Locally
 

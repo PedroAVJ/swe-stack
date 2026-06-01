@@ -1,0 +1,14 @@
+{
+  "name": "oracle",
+  "version": "0.1.0",
+  "description": "Ask ChatGPT Pro through Chrome using a human-controlled logged-in session.",
+  "author": {
+    "name": "PedroAVJ",
+    "url": "https://github.com/PedroAVJ"
+  },
+  "homepage": "https://github.com/PedroAVJ/swe-stack/tree/main/plugins/oracle",
+  "repository": "https://github.com/PedroAVJ/swe-stack",
+  "license": "MIT",
+  "keywords": ["oracle", "chatgpt", "pro", "second-opinion", "computer-use"],
+  "skills": "./skills/"
+}
