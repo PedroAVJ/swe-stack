@@ -68,6 +68,15 @@ codex plugin marketplace upgrade
 
 Leave sparse paths blank if you want Codex to fetch the whole marketplace repo. The sparse paths above are the minimal set for the marketplace manifest plus the current plugins.
 
+### Install In Claude Code
+
+```bash
+claude plugin marketplace add PedroAVJ/swe-stack --sparse .claude-plugin --sparse plugins/whatsapp --sparse plugins/oracle --sparse plugins/gmail-cli --sparse plugins/google-drive-cli --sparse plugins/google-tasks --sparse plugins/google-contacts --sparse plugins/elevenlabs --sparse plugins/android-phone
+claude plugin install whatsapp@swe-stack
+```
+
+Install the other Claude-compatible plugins from the same marketplace as needed.
+
 ### Develop Locally
 
 ```bash
