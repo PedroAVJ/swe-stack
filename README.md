@@ -23,6 +23,8 @@ The stack is intentionally practical:
 | [`plugins/google-drive-cli`](./plugins/google-drive-cli) | Open | Google Drive search, download, export, upload, and permission workflows through `gws`. |
 | [`plugins/google-tasks`](./plugins/google-tasks) | Open | Google Tasks reads and guarded mutations through `gws`. |
 | [`plugins/google-contacts`](./plugins/google-contacts) | Open | Google Contacts identity, phone, organization, and WhatsApp-enrichment lookups through `gws`. |
+| [`plugins/elevenlabs`](./plugins/elevenlabs) | Open | ElevenLabs Scribe transcription workflows with diarization, language hints, and keyterms. |
+| [`plugins/claude`](./plugins/claude) | Open | Codex-stewarded Claude Code implementation workflows with logs and templates. |
 
 More modules will land here as the custom stack gets cleaned up for public use.
 
@@ -51,12 +53,14 @@ plugins/gmail-cli
 plugins/google-drive-cli
 plugins/google-tasks
 plugins/google-contacts
+plugins/elevenlabs
+plugins/claude
 ```
 
 Or from the CLI:
 
 ```bash
-codex plugin marketplace add PedroAVJ/swe-stack --ref main --sparse .agents/plugins --sparse plugins/whatsapp --sparse plugins/oracle --sparse plugins/gmail-cli --sparse plugins/google-drive-cli --sparse plugins/google-tasks --sparse plugins/google-contacts
+codex plugin marketplace add PedroAVJ/swe-stack --ref main --sparse .agents/plugins --sparse plugins/whatsapp --sparse plugins/oracle --sparse plugins/gmail-cli --sparse plugins/google-drive-cli --sparse plugins/google-tasks --sparse plugins/google-contacts --sparse plugins/elevenlabs --sparse plugins/claude
 codex plugin marketplace upgrade
 ```
 

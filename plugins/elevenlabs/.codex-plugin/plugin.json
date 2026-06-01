@@ -1,0 +1,43 @@
+{
+  "name": "elevenlabs",
+  "version": "0.1.0",
+  "description": "Use ElevenLabs audio and speech tools from Codex.",
+  "author": {
+    "name": "PedroAVJ",
+    "url": "https://github.com/PedroAVJ"
+  },
+  "homepage": "https://elevenlabs.io/",
+  "repository": "https://github.com/PedroAVJ/swe-stack",
+  "license": "MIT",
+  "keywords": [
+    "elevenlabs",
+    "audio",
+    "speech",
+    "scribe"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "ElevenLabs",
+    "shortDescription": "Use ElevenLabs audio tools",
+    "longDescription": "Use ElevenLabs when audio and speech quality matter, including Scribe-based transcription with diarization, language hints, and domain-specific keyterms.",
+    "developerName": "PedroAVJ",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://elevenlabs.io/",
+    "privacyPolicyURL": "https://elevenlabs.io/privacy",
+    "termsOfServiceURL": "https://elevenlabs.io/terms",
+    "defaultPrompt": [
+      "Use ElevenLabs on this audio file",
+      "Transcribe this meeting with ElevenLabs Scribe",
+      "Create a diarized ElevenLabs transcript"
+    ],
+    "brandColor": "#111111",
+    "composerIcon": "./assets/elevenlabs-icon.png",
+    "logo": "./assets/elevenlabs-icon.png",
+    "screenshots": []
+  }
+}

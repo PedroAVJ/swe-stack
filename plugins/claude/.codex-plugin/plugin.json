@@ -1,0 +1,41 @@
+{
+  "name": "claude",
+  "version": "0.1.0+codex.20260527212725",
+  "description": "Use Claude Code from Codex through stewarded, inspectable implementation workflows.",
+  "author": {
+    "name": "PedroAVJ",
+    "url": "https://github.com/PedroAVJ"
+  },
+  "homepage": "https://claude.ai/code",
+  "repository": "https://github.com/PedroAVJ/swe-stack",
+  "license": "MIT",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "anthropic",
+    "collaboration"
+  ],
+  "interface": {
+    "displayName": "Claude",
+    "shortDescription": "Let Claude implement under Codex stewardship",
+    "longDescription": "Use Claude Code as an implementation collaborator from Codex while keeping Codex as the steward of prompts, logs, cleanup, verification, and final shipping judgment.",
+    "developerName": "PedroAVJ",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read"
+    ],
+    "websiteURL": "https://claude.ai/code",
+    "privacyPolicyURL": "https://www.anthropic.com/legal/privacy",
+    "termsOfServiceURL": "https://www.anthropic.com/legal/consumer-terms",
+    "defaultPrompt": [
+      "Ask Claude to implement a UI pass",
+      "Run a streamed Claude frontend pass",
+      "Use Claude as a second opinion"
+    ],
+    "brandColor": "#D97757",
+    "composerIcon": "./assets/claude-mobile-app-icon.jpg",
+    "logo": "./assets/claude-mobile-app-icon.jpg",
+    "screenshots": []
+  }
+}

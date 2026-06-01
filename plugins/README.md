@@ -15,5 +15,9 @@ Available now:
   through `gws`.
 - [`google-contacts`](./google-contacts): Google Contacts identity, phone, and
   organization lookups through `gws`.
+- [`elevenlabs`](./elevenlabs): ElevenLabs Scribe transcription workflows with
+  diarization, language hints, and keyterms.
+- [`claude`](./claude): Codex-stewarded Claude Code implementation workflows
+  with prompts, logs, and templates.
 - [`whatsapp`](./whatsapp): local WhatsApp bridge, SQLite-backed reads,
   reviewable drafts, and guarded sends.
