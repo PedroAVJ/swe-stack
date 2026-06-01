@@ -1,0 +1,7 @@
+interface:
+  display_name: "Google Drive (CLI)"
+  short_description: "Use Google Drive through gws"
+  icon_small: "./assets/google-drive.svg"
+  icon_large: "./assets/google-drive.svg"
+  brand_color: "#2684FC"
+  default_prompt: "Use $google-drive-cli to search, download, upload, export, and share Drive files through the authenticated gws CLI."

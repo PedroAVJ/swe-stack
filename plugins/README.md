@@ -7,5 +7,13 @@ Available now:
 
 - [`oracle`](./oracle): second-opinion workflow through the user's logged-in
   ChatGPT Pro session (GPT-5.5 Pro) in Chrome, driven by Computer Use.
+- [`gmail-cli`](./gmail-cli): raw Gmail message, MIME, and attachment workflows
+  through the authenticated `gws` CLI.
+- [`google-drive-cli`](./google-drive-cli): Drive search, download, export,
+  upload, and sharing workflows through `gws`.
+- [`google-tasks`](./google-tasks): Google Tasks reads and guarded mutations
+  through `gws`.
+- [`google-contacts`](./google-contacts): Google Contacts identity, phone, and
+  organization lookups through `gws`.
 - [`whatsapp`](./whatsapp): local WhatsApp bridge, SQLite-backed reads,
   reviewable drafts, and guarded sends.

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Google Contacts (CLI)"
+  short_description: "Resolve saved contacts and phone numbers through gws"
+  icon_small: "./assets/google-contacts-play-icon.png"
+  icon_large: "./assets/google-contacts-play-icon.png"
+  brand_color: "#4285F4"
+  default_prompt: "Use $google-contacts to resolve people and phone numbers through the authenticated gws CLI."

@@ -19,6 +19,10 @@ The stack is intentionally practical:
 | --- | --- | --- |
 | [`plugins/oracle`](./plugins/oracle) | Open | Codex-first second-opinion workflow through the user's logged-in ChatGPT Pro session (GPT-5.5 Pro) in Chrome. |
 | [`plugins/whatsapp`](./plugins/whatsapp) | Open | WhatsApp bridge, SQLite-backed reads, media/context tools, reviewable drafts, and guarded sends for Codex and Claude Code. |
+| [`plugins/gmail-cli`](./plugins/gmail-cli) | Open | Gmail raw-message, MIME, and attachment workflows through the authenticated `gws` CLI. |
+| [`plugins/google-drive-cli`](./plugins/google-drive-cli) | Open | Google Drive search, download, export, upload, and permission workflows through `gws`. |
+| [`plugins/google-tasks`](./plugins/google-tasks) | Open | Google Tasks reads and guarded mutations through `gws`. |
+| [`plugins/google-contacts`](./plugins/google-contacts) | Open | Google Contacts identity, phone, organization, and WhatsApp-enrichment lookups through `gws`. |
 
 More modules will land here as the custom stack gets cleaned up for public use.
 
@@ -43,12 +47,16 @@ Sparse paths:
 .agents/plugins
 plugins/whatsapp
 plugins/oracle
+plugins/gmail-cli
+plugins/google-drive-cli
+plugins/google-tasks
+plugins/google-contacts
 ```
 
 Or from the CLI:
 
 ```bash
-codex plugin marketplace add PedroAVJ/swe-stack --ref main --sparse .agents/plugins --sparse plugins/whatsapp --sparse plugins/oracle
+codex plugin marketplace add PedroAVJ/swe-stack --ref main --sparse .agents/plugins --sparse plugins/whatsapp --sparse plugins/oracle --sparse plugins/gmail-cli --sparse plugins/google-drive-cli --sparse plugins/google-tasks --sparse plugins/google-contacts
 codex plugin marketplace upgrade
 ```
 

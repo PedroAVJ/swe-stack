@@ -1,0 +1,14 @@
+{
+  "name": "google-tasks",
+  "version": "0.2.0",
+  "description": "Manage Google Tasks from Codex through the authenticated Google Workspace CLI.",
+  "author": {
+    "name": "PedroAVJ",
+    "url": "https://github.com/PedroAVJ"
+  },
+  "homepage": "https://tasks.google.com/",
+  "repository": "https://github.com/PedroAVJ/swe-stack",
+  "license": "MIT",
+  "keywords": ["google-tasks", "tasks", "google-workspace", "productivity"],
+  "skills": "./skills/"
+}

@@ -1,0 +1,14 @@
+{
+  "name": "gmail-cli",
+  "version": "0.1.0",
+  "description": "Use Gmail from Codex through the authenticated Google Workspace CLI.",
+  "author": {
+    "name": "PedroAVJ",
+    "url": "https://github.com/PedroAVJ"
+  },
+  "homepage": "https://mail.google.com/",
+  "repository": "https://github.com/PedroAVJ/swe-stack",
+  "license": "MIT",
+  "keywords": ["gmail", "google-workspace", "gws", "email", "attachments", "productivity"],
+  "skills": "./skills/"
+}

@@ -1,0 +1,45 @@
+{
+  "name": "gmail-cli",
+  "version": "0.1.0",
+  "description": "Use Gmail from Codex through the authenticated Google Workspace CLI.",
+  "author": {
+    "name": "PedroAVJ",
+    "url": "https://github.com/PedroAVJ"
+  },
+  "homepage": "https://mail.google.com/",
+  "repository": "https://github.com/PedroAVJ/swe-stack",
+  "license": "MIT",
+  "keywords": [
+    "gmail",
+    "google-workspace",
+    "gws",
+    "email",
+    "attachments",
+    "productivity"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Gmail (CLI)",
+    "shortDescription": "Use Gmail through gws",
+    "longDescription": "Search Gmail, inspect raw message payloads, list labels and metadata, and download or decode attachments through the authenticated Google Workspace CLI when the curated Gmail connector cannot expose the exact raw artifact needed.",
+    "developerName": "PedroAVJ",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://mail.google.com/",
+    "privacyPolicyURL": "https://policies.google.com/privacy",
+    "termsOfServiceURL": "https://policies.google.com/terms",
+    "defaultPrompt": [
+      "Search Gmail with gws",
+      "Inspect a raw Gmail message with gws",
+      "Download a Gmail attachment with gws"
+    ],
+    "brandColor": "#EA4335",
+    "composerIcon": "./assets/gmail.svg",
+    "logo": "./assets/gmail.svg",
+    "screenshots": []
+  }
+}

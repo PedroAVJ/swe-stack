@@ -1,0 +1,43 @@
+{
+  "name": "google-tasks",
+  "version": "0.2.0",
+  "description": "Manage Google Tasks from Codex through the authenticated Google Workspace CLI.",
+  "author": {
+    "name": "PedroAVJ",
+    "url": "https://github.com/PedroAVJ"
+  },
+  "homepage": "https://tasks.google.com/",
+  "repository": "https://github.com/PedroAVJ/swe-stack",
+  "license": "MIT",
+  "keywords": [
+    "google-tasks",
+    "tasks",
+    "google-workspace",
+    "productivity"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Google Tasks (CLI)",
+    "shortDescription": "Manage Google Tasks through gws",
+    "longDescription": "List task lists, read tasks, add new tasks, update task content, complete or reopen tasks, and perform narrow task mutations through the authenticated Google Workspace CLI.",
+    "developerName": "PedroAVJ",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://tasks.google.com/",
+    "privacyPolicyURL": "https://policies.google.com/privacy",
+    "termsOfServiceURL": "https://policies.google.com/terms",
+    "defaultPrompt": [
+      "List my Google Tasks with gws",
+      "Add a Google Task for review with gws",
+      "Mark a Google Task complete with gws"
+    ],
+    "brandColor": "#4285F4",
+    "composerIcon": "./assets/google-tasks-logo.svg",
+    "logo": "./assets/google-tasks-logo.svg",
+    "screenshots": []
+  }
+}
