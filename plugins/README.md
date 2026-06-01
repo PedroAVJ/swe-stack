@@ -19,5 +19,7 @@ Available now:
   diarization, language hints, and keyterms.
 - [`claude`](./claude): Codex-stewarded Claude Code implementation workflows
   with prompts, logs, and templates.
+- [`android-phone`](./android-phone): Android phone inspection, testing,
+  debugging, and control through ADB.
 - [`whatsapp`](./whatsapp): local WhatsApp bridge, SQLite-backed reads,
   reviewable drafts, and guarded sends.

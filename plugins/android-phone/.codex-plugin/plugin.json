@@ -1,0 +1,45 @@
+{
+  "name": "android-phone",
+  "version": "0.1.0",
+  "description": "Inspect, test, debug, and control Android phones from Codex through ADB.",
+  "author": {
+    "name": "PedroAVJ",
+    "url": "https://github.com/PedroAVJ"
+  },
+  "homepage": "https://developer.android.com/tools/adb",
+  "repository": "https://github.com/PedroAVJ/swe-stack",
+  "license": "MIT",
+  "keywords": [
+    "android",
+    "adb",
+    "phone",
+    "automation",
+    "mcp"
+  ],
+  "mcpServers": "./.mcp.json",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Android Phone",
+    "shortDescription": "Inspect and control Android phones through ADB",
+    "longDescription": "Android Phone lets Codex inspect, test, debug, and control developer-authorized Android phones over ADB, including screenshots, UI dumps, taps, swipes, typing, key events, app launching, and device metadata.",
+    "developerName": "PedroAVJ",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://developer.android.com/tools/adb",
+    "privacyPolicyURL": "https://developer.android.com/tools/adb",
+    "termsOfServiceURL": "https://developer.android.com/tools/adb",
+    "defaultPrompt": [
+      "Take a screenshot of my Android phone",
+      "Inspect the current Android UI",
+      "Tap a control on my Android phone"
+    ],
+    "brandColor": "#0F172A",
+    "composerIcon": "./assets/android-phone.png",
+    "logo": "./assets/android-phone.png",
+    "screenshots": []
+  }
+}

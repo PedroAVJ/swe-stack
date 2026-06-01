@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "android-phone": {
+      "command": "/usr/bin/env",
+      "args": ["python3", "./scripts/android_phone_mcp.py"],
+      "cwd": ".",
+      "env": {
+        "ADB_PATH": "adb"
+      }
+    }
+  }
+}
