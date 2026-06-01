@@ -1,0 +1,44 @@
+{
+  "name": "whatsapp",
+  "version": "0.3.0",
+  "description": "Work with WhatsApp chats, message context, media, and reviewable drafts from Codex.",
+  "author": {
+    "name": "PedroAVJ",
+    "url": "https://github.com/PedroAVJ"
+  },
+  "homepage": "https://github.com/PedroAVJ/swe-stack/tree/main/plugins/whatsapp",
+  "repository": "https://github.com/PedroAVJ/swe-stack",
+  "license": "MIT",
+  "keywords": [
+    "whatsapp",
+    "messages",
+    "chat",
+    "media",
+    "drafts"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "WhatsApp",
+    "shortDescription": "Read chats and prepare approved replies",
+    "longDescription": "Use WhatsApp conversation context, inspect media, create reviewable local drafts, and send only when the exact recipient and message have been approved.",
+    "developerName": "PedroAVJ",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://www.whatsapp.com/",
+    "privacyPolicyURL": "https://www.whatsapp.com/legal/privacy-policy",
+    "termsOfServiceURL": "https://www.whatsapp.com/legal/terms-of-service",
+    "defaultPrompt": [
+      "List recent WhatsApp chats",
+      "Read the latest messages in a WhatsApp chat",
+      "Draft a WhatsApp reply for review"
+    ],
+    "brandColor": "#25D366",
+    "composerIcon": "./assets/agent-chat.svg",
+    "logo": "./assets/agent-chat.svg",
+    "screenshots": []
+  }
+}

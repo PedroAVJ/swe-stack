@@ -1,0 +1,23 @@
+{
+  "name": "swe-stack",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Agentic SDK for prosumers.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PedroAVJ/swe-stack.git"
+  },
+  "homepage": "https://github.com/PedroAVJ/swe-stack#readme",
+  "bugs": {
+    "url": "https://github.com/PedroAVJ/swe-stack/issues"
+  },
+  "workspaces": [
+    "plugins/*"
+  ],
+  "scripts": {
+    "test": "pnpm --dir plugins/whatsapp test",
+    "test:whatsapp": "pnpm --dir plugins/whatsapp test",
+    "whatsapp": "pnpm --dir plugins/whatsapp cli --"
+  }
+}

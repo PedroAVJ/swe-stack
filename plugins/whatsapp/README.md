@@ -1,0 +1,169 @@
+# SWE Stack WhatsApp Plugin
+
+An agent-first WhatsApp plugin and CLI for Codex and Claude Code.
+
+This is not a thin MCP wrapper. It packages a local WhatsApp bridge, a SQLite-backed message store, a stable `whatsapp --json ...` CLI, local reviewable drafts, and guarded live sends that require explicit confirmation.
+
+The bridge is based on a patched vendored copy of [`lharries/whatsapp-mcp`](https://github.com/lharries/whatsapp-mcp). Native MCP registration is intentionally disabled by default because direct CLI calls are more reliable for coding agents and avoid tool-routing collisions.
+
+This project is unofficial and is not affiliated with WhatsApp or Meta.
+
+## What You Get
+
+- Local WhatsApp linked-device bridge.
+- SQLite-backed reads over contacts, chats, messages, context, and media.
+- A composable JSON CLI designed for agents: `whatsapp --json ...`.
+- Local draft records before sending.
+- Live-send guardrails: `--dry-run` or explicit `--confirm` is required.
+- Codex and Claude Code plugin metadata.
+
+## Requirements
+
+- macOS or Linux
+- Go
+- Python 3
+- Node.js and pnpm
+- `uv` for the vendored Python MCP backend
+
+## Install
+
+```bash
+git clone https://github.com/PedroAVJ/swe-stack.git
+cd swe-stack/plugins/whatsapp
+pnpm install
+pnpm test
+```
+
+Run the CLI from the repo:
+
+```bash
+./bin/whatsapp --json doctor
+```
+
+Optional: put the CLI on your PATH with your package manager or a symlink:
+
+```bash
+ln -sf "$PWD/bin/whatsapp" "$HOME/.local/bin/whatsapp"
+whatsapp --json doctor
+```
+
+## Link WhatsApp
+
+First-time setup uses WhatsApp's linked-device flow.
+
+```bash
+pnpm setup
+```
+
+Open WhatsApp on your phone, then use Linked devices -> Link a device and scan the QR code printed by the setup command. The QR is also written under the local state directory:
+
+```text
+~/.local/share/codex-whatsapp/upstream-qr.png
+```
+
+Start the bridge after a successful link:
+
+```bash
+pnpm start
+whatsapp --json bridge status
+```
+
+If QR pairing fails, phone-number pairing is available as an explicit fallback:
+
+```bash
+WHATSAPP_USE_PHONE_PAIRING=1 WHATSAPP_MCP_PAIR_PHONE=15551234567 pnpm setup
+```
+
+## Use With Codex
+
+Install SWE Stack as a Codex marketplace, then install the `whatsapp` plugin from the Plugins screen.
+
+```bash
+codex plugin marketplace add PedroAVJ/swe-stack --ref main --sparse .agents/plugins --sparse plugins/whatsapp
+codex plugin marketplace upgrade
+```
+
+In the Codex app, the equivalent Add marketplace values are:
+
+```text
+Source: PedroAVJ/swe-stack
+Git ref: main
+Sparse paths:
+.agents/plugins
+plugins/whatsapp
+```
+
+After installation, use the `whatsapp` skill. The skill tells agents to prefer metadata-only discovery first, then read targeted message context only when needed.
+
+Useful commands:
+
+```bash
+whatsapp --json chats list --limit 20 --no-last-message
+whatsapp --json chats list --query "Alice" --limit 10 --no-last-message
+whatsapp --json messages list --chat-jid "15551234567@s.whatsapp.net" --limit 30
+whatsapp --json messages context MESSAGE_ID --before 5 --after 5
+whatsapp --json media download MESSAGE_ID "15551234567@s.whatsapp.net"
+```
+
+## Use With Claude Code
+
+Claude Code can load the same plugin root locally:
+
+```bash
+claude --plugin-dir .
+claude plugins validate .
+```
+
+The Claude manifest does not auto-register a native MCP server. Use the CLI path by default.
+
+## Drafts And Sends
+
+Drafts are local review artifacts stored in SQLite. They do not create WhatsApp's native green draft label.
+
+```bash
+whatsapp --json drafts create --chat-jid "15551234567@s.whatsapp.net" --text "Thanks, received."
+whatsapp --json drafts list
+whatsapp --json drafts send DRAFT_ID --dry-run
+whatsapp --json drafts send DRAFT_ID --confirm
+```
+
+Direct sends are guarded:
+
+```bash
+whatsapp --json messages send --chat-jid "15551234567@s.whatsapp.net" --text "Thanks" --dry-run
+whatsapp --json messages send --chat-jid "15551234567@s.whatsapp.net" --text "Thanks" --confirm
+```
+
+Do not let an agent use `--confirm` unless the human approved the exact recipient and exact message in the current conversation.
+
+## State
+
+Runtime state is stored outside the repo by default:
+
+```text
+~/.local/share/codex-whatsapp/
+```
+
+That directory contains local SQLite databases, bridge logs, QR files, and linked-device state. It is intentionally not part of the repository.
+
+Important environment variables:
+
+- `WHATSAPP_PLUGIN_STATE_ROOT`: override the local state root.
+- `WHATSAPP_SOURCE_ROOT`: point the CLI at a different plugin checkout.
+- `WHATSAPP_DRAFTS_DB_PATH`: override the local drafts database path.
+- `WHATSAPP_MCP_HTTP_PORT`: override the local bridge port.
+- `WHATSAPP_MCP_PAIR_PHONE`: explicit phone-number pairing fallback.
+
+## Legacy MCP
+
+The vendored MCP server is still present for manual recovery and compatibility, but it is disabled by default.
+
+```bash
+WHATSAPP_ALLOW_NATIVE_MCP=1 pnpm mcp
+```
+
+For day-to-day agent work, prefer the CLI.
+
+## Attribution
+
+This project vendors and patches `lharries/whatsapp-mcp`, licensed under MIT. See `NOTICE.md` and `vendor/lharries-whatsapp-mcp/LICENSE`.
