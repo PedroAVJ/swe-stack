@@ -1,7 +1,7 @@
 interface:
   display_name: "WhatsApp"
   short_description: "Read chats and prepare approved replies"
-  icon_small: "./assets/agent-chat.svg"
-  icon_large: "./assets/agent-chat.svg"
+  icon_small: "./assets/whatsapp-app-icon.jpg"
+  icon_large: "./assets/whatsapp-app-icon.jpg"
   brand_color: "#25D366"
   default_prompt: "Use WhatsApp to read message context or draft a reviewed reply."

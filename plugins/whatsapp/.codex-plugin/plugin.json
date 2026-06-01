@@ -37,8 +37,8 @@
       "Draft a WhatsApp reply for review"
     ],
     "brandColor": "#25D366",
-    "composerIcon": "./assets/agent-chat.svg",
-    "logo": "./assets/agent-chat.svg",
+    "composerIcon": "./assets/whatsapp-app-icon.jpg",
+    "logo": "./assets/whatsapp-app-icon.jpg",
     "screenshots": []
   }
 }
