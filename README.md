@@ -17,7 +17,7 @@ The stack is intentionally practical:
 
 | Module | Status | Description |
 | --- | --- | --- |
-| [`plugins/oracle`](./plugins/oracle) | Open | Codex-first second-opinion workflow through the user's logged-in ChatGPT Pro session in Chrome. |
+| [`plugins/oracle`](./plugins/oracle) | Open | Codex-first second-opinion workflow through the user's logged-in ChatGPT Pro session (GPT-5.5 Pro) in Chrome. |
 | [`plugins/whatsapp`](./plugins/whatsapp) | Open | WhatsApp bridge, SQLite-backed reads, media/context tools, reviewable drafts, and guarded sends for Codex and Claude Code. |
 
 More modules will land here as the custom stack gets cleaned up for public use.

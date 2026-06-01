@@ -1,7 +1,7 @@
 {
   "name": "oracle",
-  "version": "0.1.0",
-  "description": "Ask ChatGPT Pro from Codex through the user's logged-in Chrome session.",
+  "version": "0.1.1",
+  "description": "Ask ChatGPT Pro (GPT-5.5 Pro) from Codex through the user's logged-in Chrome session.",
   "author": {
     "name": "PedroAVJ",
     "url": "https://github.com/PedroAVJ"
@@ -12,15 +12,15 @@
   "keywords": [
     "oracle",
     "chatgpt",
-    "pro",
+    "gpt-5.5-pro",
     "second-opinion",
     "computer-use"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Oracle",
-    "shortDescription": "Ask ChatGPT Pro through Chrome",
-    "longDescription": "Use Computer Use to operate the user's logged-in Chrome ChatGPT session, select a Pro or extended-thinking model, ask one focused second-opinion prompt, and summarize the useful answer back into Codex.",
+    "shortDescription": "Ask GPT-5.5 Pro through Chrome",
+    "longDescription": "Use Computer Use to operate the user's logged-in Chrome ChatGPT session, select Pro (GPT-5.5 Pro), ask one focused second-opinion prompt, and summarize the useful answer back into Codex.",
     "developerName": "PedroAVJ",
     "category": "Productivity",
     "capabilities": [
@@ -31,13 +31,13 @@
     "websiteURL": "https://chatgpt.com/",
     "privacyPolicyURL": "https://openai.com/policies/privacy-policy/",
     "termsOfServiceURL": "https://openai.com/policies/terms-of-use/",
-    "brandColor": "#0EA37F",
-    "composerIcon": "./assets/oracle-icon.svg",
-    "logo": "./assets/oracle-icon.svg",
+    "brandColor": "#FF7A6C",
+    "composerIcon": "./assets/gpt-5.5-pro.png",
+    "logo": "./assets/gpt-5.5-pro.png",
     "screenshots": [],
     "defaultPrompt": [
-      "Ask Oracle for a second opinion",
-      "Run this decision by ChatGPT Pro",
+      "Ask Oracle for a GPT-5.5 Pro second opinion",
+      "Run this decision by GPT-5.5 Pro",
       "Use Oracle to sanity-check this implementation"
     ]
   }

@@ -1,7 +1,7 @@
 interface:
   display_name: "Oracle"
-  short_description: "Ask ChatGPT Pro through Chrome using Computer Use"
-  icon_small: "./assets/oracle-icon.svg"
-  icon_large: "./assets/oracle-icon.svg"
-  brand_color: "#0EA37F"
-  default_prompt: "When asked to use Oracle, gather the relevant verified local context, then use Computer Use to operate the user's logged-in Chrome ChatGPT session. Select the Pro or extended-thinking Pro model before sending the prompt, wait for the answer to complete, and summarize the useful guidance back in Codex. Do not use the in-app Browser. Do not use the Chrome plugin by default."
+  short_description: "Ask GPT-5.5 Pro through Chrome using Computer Use"
+  icon_small: "./assets/gpt-5.5-pro.png"
+  icon_large: "./assets/gpt-5.5-pro.png"
+  brand_color: "#FF7A6C"
+  default_prompt: "When asked to use Oracle, gather the relevant verified local context, then use Computer Use to operate the user's logged-in Chrome ChatGPT session. Select Pro (GPT-5.5 Pro) before sending the prompt, wait for the answer to complete, and summarize the useful guidance back in Codex. Do not use the in-app Browser. Do not use the Chrome plugin by default."

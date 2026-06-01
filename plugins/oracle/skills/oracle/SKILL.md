@@ -1,6 +1,6 @@
 ---
 name: oracle
-description: Ask the user's logged-in ChatGPT Pro model through Chrome using Computer Use, wait for the answer, and bring the useful guidance back into the current Codex thread.
+description: Ask the user's logged-in ChatGPT Pro model, currently GPT-5.5 Pro, through Chrome using Computer Use, wait for the answer, and bring the useful guidance back into the current Codex thread.
 metadata:
   author: Pedro
   origin: swe-stack-plugin
@@ -13,13 +13,14 @@ metadata:
 ## Overview
 
 Use the user's logged-in ChatGPT session in Chrome as the Oracle. This is the
-single Oracle skill.
+single Oracle skill. The intended model is ChatGPT Pro's Pro option, currently
+GPT-5.5 Pro.
 
 The default Oracle flow is live and interactive:
 
 - Use Computer Use to operate the local Chrome app directly.
 - Navigate Chrome to ChatGPT.
-- Select the Pro or extended-thinking Pro model before sending.
+- Select Pro (GPT-5.5 Pro) before sending.
 - Send one focused prompt.
 - Wait for the answer to finish.
 - Summarize the useful guidance back in the Codex thread.
@@ -44,6 +45,7 @@ Use this skill when the user says things like:
 - "use Oracle"
 - "get a second opinion from Pro"
 - "ask ChatGPT Pro"
+- "ask GPT-5.5 Pro"
 - "use the stronger model"
 - "run this by Pro Mode"
 
@@ -106,7 +108,7 @@ decision-critical facts before using Oracle.
    unavailable until the user logs in.
 6. Start a new ChatGPT conversation unless continuing an existing Oracle thread
    is clearly required by the user's request.
-7. Open the model selector and choose the Pro or extended-thinking Pro model.
+7. Open the model selector and choose Pro (GPT-5.5 Pro).
    If the selector does not expose a Pro model, stop and report that the Oracle
    surface is unavailable.
 8. Paste/send the prompt.

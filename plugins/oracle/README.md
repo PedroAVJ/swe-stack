@@ -1,15 +1,18 @@
 # SWE Stack Oracle Plugin
 
-A Codex-first plugin for getting a second opinion from the user's logged-in ChatGPT Pro session.
+A Codex-first plugin for getting a second opinion from the user's logged-in ChatGPT Pro session, currently GPT-5.5 Pro.
 
-Oracle is intentionally not an API wrapper. It packages the existing Oracle skill as a plugin and preserves the live workflow: gather verified local context, use Computer Use to operate Chrome, select a Pro or extended-thinking Pro model in ChatGPT, send one focused prompt, wait for the answer, and bring the useful guidance back into Codex.
+Oracle is intentionally not an API wrapper. It packages the existing Oracle skill as a plugin and preserves the live workflow: gather verified local context, use Computer Use to operate Chrome, select Pro (GPT-5.5 Pro) in ChatGPT, send one focused prompt, wait for the answer, and bring the useful guidance back into Codex.
 
 This project is unofficial and is not affiliated with OpenAI. ChatGPT, GPT, OpenAI, and related marks are trademarks of OpenAI.
+
+The plugin icon uses the GPT-5.5 Pro model-card image published on the OpenAI Developers model page.
 
 ## What You Get
 
 - One canonical `oracle` skill.
 - Computer Use + Chrome as the default path.
+- GPT-5.5 Pro named explicitly as the target ChatGPT Pro model.
 - A prompt shape for second-opinion engineering and product decisions.
 - Guardrails against using logged-out, free, in-app-browser, or non-Pro surfaces.
 - Legacy static dossier scripts preserved only for explicit bundle requests.
@@ -42,7 +45,7 @@ Use Oracle when you want a high-quality second opinion:
 ```text
 Ask Oracle to sanity-check this architecture decision.
 Use Oracle for a second opinion on this bug.
-Run this implementation plan by ChatGPT Pro.
+Run this implementation plan by GPT-5.5 Pro.
 ```
 
 The skill requires the user's logged-in ChatGPT session in Chrome and will not automate login challenges, CAPTCHAs, credential prompts, or account setup.
