@@ -8,13 +8,38 @@ import json
 import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 from dataclasses import dataclass
 from typing import Any, Callable
 
 
-ADB_PATH = os.environ.get("ADB_PATH", "adb")
+def resolve_adb_path() -> str:
+    configured = os.environ.get("ADB_PATH")
+    if configured:
+        return configured
+
+    path_match = shutil.which("adb")
+    if path_match:
+        return path_match
+
+    for env_name in ("ANDROID_HOME", "ANDROID_SDK_ROOT"):
+        sdk_root = os.environ.get(env_name)
+        if not sdk_root:
+            continue
+        candidate = os.path.join(sdk_root, "platform-tools", "adb")
+        if os.path.exists(candidate):
+            return candidate
+
+    for candidate in ("/opt/homebrew/bin/adb", "/usr/local/bin/adb"):
+        if os.path.exists(candidate):
+            return candidate
+
+    return "adb"
+
+
+ADB_PATH = resolve_adb_path()
 DEFAULT_TIMEOUT = float(os.environ.get("ANDROID_PHONE_ADB_TIMEOUT", "20"))
 
 
