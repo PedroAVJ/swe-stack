@@ -1,5 +1,5 @@
 ---
-name: "symphony-azure-merge"
+name: "azure-merge"
 description: "Run the Azure DevOps Symphony merge lane: publish or reuse an Azure DevOps PR, merge it, babysit relevant rollout proof, verify live behavior when scoped, and reconcile the tracker after proof is satisfied."
 ---
 
@@ -37,7 +37,7 @@ Do not hardcode facts from a different client or repo.
 - If the worktree is mixed, stage only intended files and ask when scope is
   ambiguous.
 - Use repo-local publish guidance when present. Otherwise use
-  `symphony-azure-publish-changes`.
+  `azure-publish-changes`.
 
 ## Quick Start
 

@@ -1,5 +1,5 @@
 ---
-name: symphony-merge
+name: merge
 description: "Run the explicit Symphony publish/merge/release-proof lifecycle: branch, PR, merge, rollout babysitting, tracker reconciliation, and worktree cleanup across GitHub, Azure DevOps, or another repo host."
 ---
 
@@ -16,8 +16,8 @@ Use underlying skills as implementation modules when they fit:
 - For GitHub publishing, follow the installed `github:yeet` skill when available.
 - For legacy prompts or detailed rollout heuristics, the old `merge-and-babysit` path may redirect here.
 - For repo-local workflows, prefer a repo-local `merge` skill over this global skill when present.
-- For Azure DevOps repos, prefer `symphony-azure-publish-changes` and
-  `symphony-azure-merge` when the repo matches their facts or has equivalent
+- For Azure DevOps repos, prefer `azure-publish-changes` and
+  `azure-merge` when the repo matches their facts or has equivalent
   Azure DevOps conventions.
 
 ## Default Meaning

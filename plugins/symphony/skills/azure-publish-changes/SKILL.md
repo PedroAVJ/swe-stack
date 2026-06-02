@@ -1,5 +1,5 @@
 ---
-name: "symphony-azure-publish-changes"
+name: "azure-publish-changes"
 description: "Publish local changes for an Azure DevOps-hosted Symphony lane: confirm scope, stage intended files, commit, push, and create or update an Azure DevOps pull request."
 ---
 

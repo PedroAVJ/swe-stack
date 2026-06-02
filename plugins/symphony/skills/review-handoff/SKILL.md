@@ -1,5 +1,5 @@
 ---
-name: symphony-review-handoff
+name: review-handoff
 description: Use when Pedro wants a Symphony human-review handoff artifact for a UI fix, especially a slower browser video that clearly shows the relevant behavior using existing auth/setup helpers instead of a full test-suite style demo.
 metadata:
   author: Pedro

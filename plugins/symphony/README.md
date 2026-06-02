@@ -11,11 +11,14 @@ passes, but Claude should not become the source of truth for work status.
 
 - Coordinate source-of-truth intake from WhatsApp, meetings, Linear, git, and
   repo docs when Pedro explicitly asks for a Symphony workflow.
+- Elicit requirements into approved Linear work packets before implementation.
+- Dispatch approved Linear work into separate Codex implementation threads so
+  Pedro can follow up there with fresh context.
 - Preserve meeting/call/audio evidence before issue extraction.
 - Keep implementable Linear work separate from bookmarks, vague future topics,
   and canceled/obsolete scope.
-- Run coverage passes so stakeholder input has issue/comment/doc tracking
-  without making Linear the full spec.
+- Run coverage checks as a mode of requirements elicitation so stakeholder
+  input has issue/comment/doc tracking without making Linear the full spec.
 - Treat issue/spec rewrites as a restart boundary for stale work.
 - Run explicit Codex review, merge, release-proof, and Azure DevOps lifecycle
   lanes when Pedro asks for shipping work.
@@ -39,17 +42,19 @@ HTML, a deliberately scoped intake audit, or a status summary.
 ## Skills
 
 - `symphony`
-- `symphony-evidence-intake`
-- `symphony-linear-issue-writer`
-- `symphony-issue-intake`
-- `symphony-coverage-pass`
-- `symphony-codex-review`
-- `symphony-review-handoff`
-- `symphony-change-preview`
-- `symphony-sprint-review`
-- `symphony-merge`
-- `symphony-azure-publish-changes`
-- `symphony-azure-merge`
+- `evidence-intake`
+- `requirements-elicitation`
+- `implementation-dispatch`
+- `linear-issue-writer` (compatibility/internal issue-body rules)
+- `issue-intake` (compatibility alias)
+- `coverage-pass` (compatibility mode)
+- `codex-review`
+- `review-handoff`
+- `change-preview`
+- `sprint-review`
+- `merge`
+- `azure-publish-changes`
+- `azure-merge`
 
 ## Boundary
 

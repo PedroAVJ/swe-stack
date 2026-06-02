@@ -1,5 +1,5 @@
 ---
-name: symphony-sprint-review
+name: sprint-review
 description: "Use when Pedro explicitly asks for a Symphony sprint review, demo agenda, stakeholder-facing HTML review, or grounded presentation artifact."
 ---
 

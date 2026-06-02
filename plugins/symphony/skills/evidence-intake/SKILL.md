@@ -1,5 +1,5 @@
 ---
-name: symphony-evidence-intake
+name: evidence-intake
 description: Preserve meeting, call, audio-note, transcript, Drive, Gmail, or local media evidence before Symphony issue intake, coverage passes, review artifacts, or Linear extraction. Do not create Linear issues by default.
 ---
 
@@ -116,7 +116,7 @@ Do not:
 - delete source files
 
 If Pedro asks for Linear follow-up after this intake, use the evidence pointers
-with `symphony-issue-intake` or `symphony-coverage-pass`.
+with `issue-intake` or `coverage-pass`.
 
 ## Preferred Output
 

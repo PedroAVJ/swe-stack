@@ -1,5 +1,5 @@
 ---
-name: symphony-change-preview
+name: change-preview
 description: Thin Symphony launcher for Pedro-facing standalone HTML change previews. It invokes Claude with its frontend-design skill, then the runner publishes the resulting HTML when that explicit review lane is requested.
 metadata:
   author: Pedro
@@ -33,7 +33,7 @@ Call the helper with a target PR/change plus an output path. The helper calls Cl
 
 ```bash
 python3 "$(find "${CODEX_HOME:-$HOME/.codex}/plugins/cache/swe-stack/symphony" \
-  -path '*/skills/symphony-change-preview/scripts/generate_preview.py' \
+  -path '*/skills/change-preview/scripts/generate_preview.py' \
   -print | sort -V | tail -1)" \
   --workspace . \
   --target "PR 123" \

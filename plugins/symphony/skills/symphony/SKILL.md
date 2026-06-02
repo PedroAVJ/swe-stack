@@ -1,6 +1,6 @@
 ---
 name: symphony
-description: "Use only when Pedro explicitly asks for Symphony or a Symphony-owned meta-workflow: evidence intake, source-of-truth audits, Linear lifecycle hygiene, Codex review, merge/release proof, review artifacts, status summaries, or notifications after agent work completes."
+description: "Use only when Pedro explicitly asks for Symphony or a Symphony-owned meta-workflow: requirements elicitation, implementation dispatch to a fresh thread, evidence intake, source-of-truth audits, Linear lifecycle hygiene, Codex review, merge/release proof, review artifacts, status summaries, or notifications after agent work completes."
 ---
 
 # Symphony
@@ -24,9 +24,10 @@ artifact, a deliberately scoped intake audit, or a status summary.
 
 ## Core Model
 
-- Symphony owns repeatable meta-workflow shape when explicitly invoked: intake,
-  classify, create/update work, lifecycle hygiene, code-review closeout,
-  explicit merge/release proof, status review, and notify Pedro.
+- Symphony owns repeatable meta-workflow shape when explicitly invoked:
+  requirements elicitation, implementation dispatch, lifecycle hygiene,
+  code-review closeout, explicit merge/release proof, status review, and notify
+  Pedro.
 - Codex owns judgment and source boundaries.
 - Claude owns artifact/design/presentation passes when useful, but not the
   canonical interpretation of work status.
@@ -37,24 +38,42 @@ artifact, a deliberately scoped intake audit, or a status summary.
   happen only when Pedro explicitly asks for that lifecycle step or the current
   task clearly includes it.
 
+## Two-Lane Product Work Model
+
+For stakeholder-driven software work, prefer this split:
+
+1. `requirements-elicitation`: read the source of truth, talk through
+   meaning/scope with Pedro, check Linear coverage, and create/update the
+   approved Linear work packet. Do not code.
+2. `implementation-dispatch`: after Pedro approves implementation, create a
+   fresh Codex thread/agent from the Linear issue and report that thread back.
+   Do not implement in the elicitation thread.
+
+The old intake, coverage, and issue-writing lanes are compatibility modes under
+requirements elicitation. Use the two-lane model when the request is about
+extracting requirements and then letting another agent implement them.
+
 ## Lifecycle Lanes
 
 Use the narrower Symphony skills when the request names a lane:
 
-- `symphony-evidence-intake`: preserve meetings, calls, audio notes,
+- `evidence-intake`: preserve meetings, calls, audio notes,
   transcripts, Drive/Gmail artifacts, and local media before extraction.
-- `symphony-linear-issue-writer`: write or rewrite grounded Linear issue bodies
-  for Symphony pickup.
-- `symphony-issue-intake`: turn grounded evidence into Linear work.
-- `symphony-coverage-pass`: check that stakeholder input has issue/comment/doc
-  coverage without making Linear the full spec.
-- `symphony-codex-review`: run Codex review as closeout and verify findings.
-- `symphony-review-handoff`: produce human-readable UI review videos or
+- `requirements-elicitation`: extract grounded requirements into approved Linear
+  work packets before implementation.
+- `implementation-dispatch`: create a separate Codex implementation thread from
+  an approved Linear issue.
+- `linear-issue-writer`: compatibility/internal issue-body rules.
+- `issue-intake`: compatibility alias for requirements elicitation.
+- `coverage-pass`: compatibility mode for checking missing Linear/doc
+  coverage.
+- `codex-review`: run Codex review as closeout and verify findings.
+- `review-handoff`: produce human-readable UI review videos or
   screenshots.
-- `symphony-change-preview`: produce a Pedro-facing HTML preview artifact.
-- `symphony-sprint-review`: produce grounded demo/review artifacts.
-- `symphony-merge`: run explicit publish/merge/release-proof lifecycle.
-- `symphony-azure-publish-changes` and `symphony-azure-merge`: use for
+- `change-preview`: produce a Pedro-facing HTML preview artifact.
+- `sprint-review`: produce grounded demo/review artifacts.
+- `merge`: run explicit publish/merge/release-proof lifecycle.
+- `azure-publish-changes` and `azure-merge`: use for
   Azure DevOps style publish and release proof.
 
 ## Source-Of-Truth Order
@@ -75,13 +94,16 @@ feedback into work:
 1. Read the actual source conversation or transcript before classifying intent.
 2. Identify implementable work, Needs Info blockers, explicit backlog parking,
    canceled/obsolete items, and future-meeting topics.
-3. Use the existing Linear issue-writing workflow for issue bodies and evidence.
-4. Put uncertain or review-needed issues in Backlog unless Pedro asks for Todo.
-5. Use Todo only when the issue is implementation-ready and Pedro wants agents
-   to pick it up.
-6. After rewriting a picked-up issue, move it back to Todo only when the new
+3. Use `requirements-elicitation` for the issue/body/evidence shape.
+4. Put uncertain or review-needed issues in Backlog/Needs Info unless Pedro asks
+   for Todo.
+5. Use Todo when the issue is implementation-ready and Pedro wants agents to
+   pick it up.
+6. Use `implementation-dispatch` to create a fresh implementation thread after
+   Pedro approves pickup.
+7. After rewriting a picked-up issue, move it back to Todo only when the new
    body should restart implementation.
-7. If a stale PR/workspace exists for rewritten work, report the restart
+8. If a stale PR/workspace exists for rewritten work, report the restart
    boundary clearly. Do not take over repo implementation unless Pedro
    explicitly asks for that separate coding task.
 

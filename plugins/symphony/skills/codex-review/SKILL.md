@@ -1,5 +1,5 @@
 ---
-name: symphony-codex-review
+name: codex-review
 description: "Run Codex code review as a Symphony closeout check: local dirty changes, PR branch vs main, parallel tests, and accepted-finding cleanup."
 ---
 
@@ -88,7 +88,7 @@ Bundled helper:
 
 ```bash
 "$(find "${CODEX_HOME:-$HOME/.codex}/plugins/cache/swe-stack/symphony" \
-  -path '*/skills/symphony-codex-review/scripts/codex-review' \
+  -path '*/skills/codex-review/scripts/codex-review' \
   -print | sort -V | tail -1)" --help
 ```
 
