@@ -2,7 +2,7 @@
 
 Local Codex plugin for using Claude Code as a collaborator.
 
-Codex owns this wrapper as a stewardship layer: prompts, logs, verification, and final shipping judgment stay under Codex control. The plugin is not a fixed "collaboration mode"; it is a way to choose the right Claude workflow for the task and preserve the feedback loop. For visual UI work where taste and execution matter, Claude should usually own the implementation pass and Codex should constrain, review, clean up, and verify. The plugin intentionally has no bundled skills. Workflows like frontend design are runtime prompts/scripts, not hidden plugin behavior.
+Codex owns this wrapper as a stewardship layer: prompts, logs, verification, and final shipping judgment stay under Codex control. The plugin is not a fixed "collaboration mode"; it is a way to choose the right Claude workflow for the task and preserve the feedback loop. For visual UI work where taste and execution matter, Claude should usually own the implementation pass and Codex should constrain, review, clean up, and verify.
 
 This project is unofficial and is not affiliated with Anthropic.
 
@@ -15,6 +15,7 @@ This project is unofficial and is not affiliated with Anthropic.
 
 ## Included surfaces
 
+- `skills/explainer` produces polished standalone HTML explainers through the Claude visual-artifact workflow.
 - `scripts/run_design_pass.py` runs Claude in streamed JSON mode and writes raw logs so Codex can inspect progress.
 - `templates/frontend-implementation.md` is the default frontend workflow: Claude edits the UI directly, while Codex stewards and cleans up.
 - `templates/frontend-handoff.md` remains available for explicit read-only critique or planning.
