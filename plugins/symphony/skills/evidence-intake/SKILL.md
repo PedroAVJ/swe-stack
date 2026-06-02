@@ -30,6 +30,11 @@ Produce durable pointers to the source evidence:
 This skill prepares evidence only. It does not create Linear issues unless Pedro
 explicitly asks for Linear capture in the same turn.
 
+When repo/workspace evidence files are created or changed, publish those changes
+before returning. Evidence intake should not stop at local files unless pushing
+is blocked by credentials, remote divergence, conflicts, or an explicit repo
+policy that requires a PR/review step.
+
 ## Tool Routing
 
 - For local recording, voice memo, AirDrop, Downloads, or other raw audio/video
@@ -85,7 +90,17 @@ If no source artifact can be found, stop and say the evidence is not grounded.
    - check recording metadata or file presence
    - check uploaded Drive metadata or folder listing when Drive was used
    - check repo diff/status when repo files were added
-7. Return exact artifact pointers.
+7. If repo/workspace files were added or changed, commit and push the evidence
+   changes before returning:
+   - stage only the evidence files for this intake
+   - use a scoped commit message and branch when the checkout is detached,
+     dirty with unrelated work, or repo policy favors branches
+   - push to the relevant upstream/branch; create or report a PR link when the
+     repo requires PR-based review
+   - do not merge, deploy, or create Linear issues unless Pedro explicitly asks
+   - if pushing cannot complete, report the exact blocker and leave clear local
+     paths, branch, and commit status
+8. Return exact artifact pointers plus repo publication pointers when applicable.
 
 ## Preferred Repo Shape
 
@@ -130,6 +145,7 @@ Notes:
 Do not:
 
 - create Linear issues unless Pedro explicitly asks
+- leave repo evidence changes only local when commit/push is available
 - invent action items or specifications from the transcript
 - treat transcript snippets as a replacement for the recording when the audio
   is available
@@ -149,4 +165,5 @@ Evidence ready:
 - Recording/source media: PATH_OR_LINK
 - Chat transcript: PATH_OR_LINK_OR_NOT_AVAILABLE
 - Metadata: PATH_OR_LINK
+- Repo publication: BRANCH_COMMIT_OR_PR_LINK_OR_NOT_APPLICABLE
 ```
