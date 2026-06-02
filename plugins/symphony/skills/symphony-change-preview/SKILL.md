@@ -1,6 +1,6 @@
 ---
 name: symphony-change-preview
-description: Thin Symphony/Codex launcher for Pedro-facing standalone HTML change previews. It invokes Claude with its frontend-design skill, then Codex publishes the resulting HTML when that explicit review lane is requested.
+description: Thin Symphony launcher for Pedro-facing standalone HTML change previews. It invokes Claude with its frontend-design skill, then the runner publishes the resulting HTML when that explicit review lane is requested.
 metadata:
   author: Pedro
   origin: local-self-authored
@@ -12,13 +12,13 @@ metadata:
 
 Generate a standalone `change-preview.html` that helps Pedro quickly understand what changed.
 
-This is a thin orchestration skill for Codex/the runner. Claude does the creative artifact work through its `frontend-design` skill.
+This is a thin orchestration skill for Symphony/the runner. Claude does the creative artifact work through its `frontend-design` skill.
 
 ## Boundary
 
 - Verification evidence is internal trust work for the agent: tests, screenshots, traces, logs, production checks, and whatever else proves the change works.
 - The change preview is Pedro-facing comprehension: a clear HTML artifact that explains what changed and what matters.
-- Claude owns the preview direction through its `frontend-design` skill. Codex does not choose the sections, media, mockups, or visual style.
+- Claude owns the preview direction through its `frontend-design` skill. The Symphony runner does not choose the sections, media, mockups, or visual style.
 - Use the repo, PR/diff, available evidence, and app behavior as inputs.
 - Mockups, diagrams, and simplified UI are allowed when they improve comprehension. Label captured evidence, illustrative material, and caveats honestly.
 - The HTML must be responsive enough to read comfortably on Pedro's iPhone and MacBook. Use mobile-first CSS, stack dense grids on narrow screens, avoid fixed-width content, prevent horizontal scroll, and keep headings/buttons/labels inside their containers at common iPhone widths.
@@ -32,7 +32,9 @@ This is a thin orchestration skill for Codex/the runner. Claude does the creativ
 Call the helper with a target PR/change plus an output path. The helper calls Claude with a short prompt that explicitly asks it to use `frontend-design`. Do not give Claude a prescribed section outline or visual direction.
 
 ```bash
-python3 ~/.codex/skills/change-preview/scripts/generate_preview.py \
+python3 "$(find "${CODEX_HOME:-$HOME/.codex}/plugins/cache/swe-stack/symphony" \
+  -path '*/skills/symphony-change-preview/scripts/generate_preview.py' \
+  -print | sort -V | tail -1)" \
   --workspace . \
   --target "PR 123" \
   --output .symphony-local/change-preview/change-preview.html
