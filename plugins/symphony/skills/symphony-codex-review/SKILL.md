@@ -87,7 +87,9 @@ Run inline only for tiny changes or when subagents are unavailable.
 Bundled helper:
 
 ```bash
-~/.codex/skills/codex-review/scripts/codex-review --help
+"$(find "${CODEX_HOME:-$HOME/.codex}/plugins/cache/swe-stack/symphony" \
+  -path '*/skills/symphony-codex-review/scripts/codex-review' \
+  -print | sort -V | tail -1)" --help
 ```
 
 If installed from `agent-scripts`, path is:
