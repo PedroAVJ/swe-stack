@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Symphony">
+  <defs>
+    <linearGradient id="sea" x1="64" y1="434" x2="448" y2="250" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#22D3EE"/>
+      <stop offset="1" stop-color="#2563EB"/>
+    </linearGradient>
+    <linearGradient id="ship" x1="120" y1="96" x2="408" y2="380" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#CBD5E1"/>
+    </linearGradient>
+    <linearGradient id="signal" x1="136" y1="126" x2="380" y2="338" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#A855F7"/>
+      <stop offset="1" stop-color="#0EA5E9"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#0F172A"/>
+  <path d="M92 374c42 0 42 24 84 24s42-24 84-24 42 24 84 24 42-24 84-24" fill="none" stroke="url(#sea)" stroke-width="28" stroke-linecap="round"/>
+  <path d="M114 320h284c-12 42-48 76-104 91H190c-38-16-64-47-76-91Z" fill="url(#ship)"/>
+  <path d="M150 258h226l24 62H124l26-62Z" fill="#E2E8F0"/>
+  <path d="M186 198h158l30 60H156l30-60Z" fill="url(#ship)"/>
+  <path d="M220 132h92l32 66H188l32-66Z" fill="#F8FAFC"/>
+  <path d="M236 112h40v42h-40z" fill="url(#signal)"/>
+  <g fill="#0F172A">
+    <circle cx="178" cy="292" r="12"/>
+    <circle cx="222" cy="292" r="12"/>
+    <circle cx="266" cy="292" r="12"/>
+    <circle cx="310" cy="292" r="12"/>
+    <circle cx="354" cy="292" r="12"/>
+  </g>
+  <g fill="url(#signal)">
+    <rect x="214" y="226" width="24" height="18" rx="5"/>
+    <rect x="250" y="226" width="24" height="18" rx="5"/>
+    <rect x="286" y="226" width="24" height="18" rx="5"/>
+  </g>
+  <path d="M120 344h282" stroke="#94A3B8" stroke-width="12" stroke-linecap="round"/>
+</svg>

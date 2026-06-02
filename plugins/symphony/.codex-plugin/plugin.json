@@ -1,0 +1,44 @@
+{
+  "name": "symphony",
+  "version": "0.1.0",
+  "description": "Use Symphony workflow protocols from Codex for Pedro's explicit lifecycle loops.",
+  "author": {
+    "name": "PedroAVJ",
+    "url": "https://github.com/PedroAVJ"
+  },
+  "homepage": "https://github.com/PedroAVJ/swe-stack/tree/main/plugins/symphony",
+  "repository": "https://github.com/PedroAVJ/swe-stack",
+  "license": "MIT",
+  "keywords": [
+    "symphony",
+    "codex",
+    "linear",
+    "azure-devops",
+    "merge",
+    "review",
+    "workflow",
+    "orchestration"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Symphony",
+    "shortDescription": "Run explicit lifecycle loops",
+    "longDescription": "Symphony is the local orchestration layer for Pedro's explicit agent lifecycle loops: evidence intake, source-of-truth coverage, Linear issue hygiene, Codex review closeout, publish/merge/release proof, Azure DevOps lanes, review artifacts, and stakeholder-facing summaries. It is not a background deploy daemon; ordinary coding and issue-by-issue work stays with normal Codex repo workflows unless Pedro invokes a Symphony lifecycle lane. Codex remains the steward and may delegate visual/presentation passes to Claude.",
+    "developerName": "PedroAVJ",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Run a Symphony intake pass",
+      "Run a Symphony coverage pass",
+      "Ship this with Symphony"
+    ],
+    "brandColor": "#0EA5E9",
+    "composerIcon": "./assets/symphony.svg",
+    "logo": "./assets/symphony.svg",
+    "screenshots": []
+  }
+}
