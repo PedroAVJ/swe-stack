@@ -40,6 +40,7 @@ HTML, a deliberately scoped intake audit, or a status summary.
 
 - `symphony`
 - `symphony-evidence-intake`
+- `symphony-linear-issue-writer`
 - `symphony-issue-intake`
 - `symphony-coverage-pass`
 - `symphony-codex-review`

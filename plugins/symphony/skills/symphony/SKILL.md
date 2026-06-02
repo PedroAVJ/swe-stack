@@ -43,6 +43,8 @@ Use the narrower Symphony skills when the request names a lane:
 
 - `symphony-evidence-intake`: preserve meetings, calls, audio notes,
   transcripts, Drive/Gmail artifacts, and local media before extraction.
+- `symphony-linear-issue-writer`: write or rewrite grounded Linear issue bodies
+  for Symphony pickup.
 - `symphony-issue-intake`: turn grounded evidence into Linear work.
 - `symphony-coverage-pass`: check that stakeholder input has issue/comment/doc
   coverage without making Linear the full spec.
