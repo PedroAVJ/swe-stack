@@ -30,6 +30,23 @@ Produce durable pointers to the source evidence:
 This skill prepares evidence only. It does not create Linear issues unless Pedro
 explicitly asks for Linear capture in the same turn.
 
+## Tool Routing
+
+- For local recording, voice memo, AirDrop, Downloads, or other raw audio/video
+  evidence, use Google Drive as the durable source-media home. Upload the
+  original media to a private Drive folder first when the source is not already
+  in Drive, then store repo/workspace metadata that points to the Drive files.
+- For Drive uploads, folder creation, metadata reads, or raw media files that
+  the curated Drive connector cannot upload directly, use the authenticated
+  Google Drive CLI workflow (`gws drive ...`) from the Google Drive CLI plugin.
+- For audio/video transcription, prefer ElevenLabs Scribe when the ElevenLabs
+  plugin is available and `ELEVENLABS_API_KEY` is set. Use Spanish
+  (`--language es`) when the source is Spanish, diarization for multi-speaker
+  conversations, and `--response-format diarized_text` for readable evidence.
+- If ElevenLabs is unavailable or lacks credentials, say that explicitly before
+  choosing a fallback transcription path. Do not silently pivot to a generic
+  local or OpenAI transcription workflow.
+
 ## Source Order
 
 1. User-provided recording, transcript, local path, or Drive link.
@@ -48,15 +65,19 @@ If no source artifact can be found, stop and say the evidence is not grounded.
    - transcript or Google Doc transcript
    - chat transcript
    - Drive/Gmail/local metadata
-2. Preserve the raw source or a stable reference in the repo/workspace when
-   there is a clear canonical home.
-3. If no transcript exists, transcribe the recording with the available
-   transcription workflow.
+2. For local audio/video evidence, create or find the intended private Drive
+   evidence folder and upload the original source media before transcription.
+   For non-media or already-canonical evidence, preserve the raw source or a
+   stable reference in the repo/workspace when there is a clear canonical home.
+3. If no transcript exists, transcribe the recording with ElevenLabs Scribe
+   when available.
    - Use Spanish (`--language es`) when the source is Spanish.
    - Enable diarization for calls or multi-speaker notes when speaker identity
      matters.
+   - If ElevenLabs cannot run, report the exact blocker before using another
+     transcription workflow.
 4. Store the canonical transcript and metadata in a predictable location.
-5. Upload source media and transcript to Drive only when that is the intended
+5. Upload transcripts to the same Drive evidence folder when Drive is the
    durable evidence home, and do not change sharing/permissions without explicit
    approval.
 6. Verify the bundle:
