@@ -9,6 +9,12 @@ description: "Run the explicit Symphony publish/merge/release-proof lifecycle: b
 
 Use this skill for the whole "get it into the real target and prove the relevant release settled" lifecycle.
 
+When work was started through `implementation-dispatch`, the dispatched worker
+thread owns this lifecycle by default. The parent/operator thread routes Pedro's
+merge approval back to that same worker thread; it does not execute the merge
+itself unless no worker thread exists or Pedro explicitly asks this thread to
+take over.
+
 This skill supersedes the old `merge-and-babysit` name. It also incorporates the publish step: if the work is local, first publish it on a branch and create a PR; then merge; then babysit the relevant rollout, deployment, preview, release, tracker, and worktree state.
 
 Use underlying skills as implementation modules when they fit:
@@ -19,6 +25,28 @@ Use underlying skills as implementation modules when they fit:
 - For Azure DevOps repos, prefer `azure-publish-changes` and
   `azure-merge` when the repo matches their facts or has equivalent
   Azure DevOps conventions.
+
+## Thread Ownership
+
+Use this routing before touching Git, GitHub, Linear, or deployment state:
+
+- If you are the parent/operator thread and the work has an implementation
+  thread, PR, branch, or Linear issue produced by `implementation-dispatch`,
+  find that worker thread with `list_threads`/`read_thread` and send it a merge
+  prompt with `send_message_to_thread`.
+- The merge prompt should name the Linear issue, PR/branch, Pedro's approval,
+  and ask the worker to run this `merge` skill through merge, rollout proof,
+  tracker reconciliation, and local cleanup.
+- Do not start a second worker or merge locally from the parent just because
+  the PR is ready. Report the worker thread that now owns the merge.
+- If you are the worker thread that receives Pedro's merge approval, run the
+  lifecycle in this skill end-to-end and report the merge/release result in the
+  worker thread.
+- If no worker thread exists, or the worker is unavailable/blocked, the parent
+  may run this skill directly after saying why it is taking over.
+- If Pedro explicitly asks the current thread to merge, this thread may execute
+  the merge directly, but still preserve the same merge/release/tracker proof
+  contract.
 
 ## Default Meaning
 
@@ -34,6 +62,8 @@ When the user says "merge", assume they want:
 Do not stop at "PR opened" unless the user explicitly asks only for a PR.
 Do not stop at "merged" when there are rollout signals to watch.
 Do not claim a release is done when the remaining boundary is manual.
+In an operator thread, "merge" usually means "tell the issue's worker thread to
+run the merge lane"; in a worker thread, it means "execute the merge lane here."
 
 ## Branch And Publish Policy
 
