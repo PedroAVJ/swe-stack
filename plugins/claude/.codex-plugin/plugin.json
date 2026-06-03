@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "Claude",
     "shortDescription": "Let Claude design and implement under Codex stewardship",
-    "longDescription": "Use Claude Code as a design and implementation collaborator from Codex while keeping Codex as the steward of prompts, logs, cleanup, verification, and final shipping judgment. Includes an explainer skill for polished single-file HTML explainers.",
+    "longDescription": "Use Claude Code as a design and implementation collaborator from Codex while keeping Codex as the steward of prompts, logs, cleanup, verification, and final shipping judgment. App UI and frontend implementation work must go through Claude's implementation pass first. Includes an explainer skill for polished single-file HTML explainers.",
     "developerName": "PedroAVJ",
     "category": "Productivity",
     "capabilities": [
