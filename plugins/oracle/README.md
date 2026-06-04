@@ -2,7 +2,7 @@
 
 A Codex-first plugin for getting a second opinion from the user's logged-in ChatGPT Pro session, currently GPT-5.5 Pro.
 
-Oracle is intentionally not an API wrapper. It packages the existing Oracle skill as a plugin and preserves the live workflow: gather verified local context, use Computer Use to operate Chrome, select Pro (GPT-5.5 Pro) in ChatGPT, send one focused prompt, wait for the answer, and bring the useful guidance back into Codex.
+Oracle is intentionally not an API wrapper. It packages the existing Oracle skill as a plugin and preserves the live workflow: gather verified local context, use the Chrome plugin / Codex Chrome Extension against the user's logged-in Chrome session, select Pro (GPT-5.5 Pro / Extended Pro) in ChatGPT, send one focused prompt, wait for the answer, and bring the useful guidance back into Codex.
 
 This project is unofficial and is not affiliated with OpenAI. ChatGPT, GPT, OpenAI, and related marks are trademarks of OpenAI.
 
@@ -11,8 +11,12 @@ The plugin icon uses the GPT-5.5 Pro model-card image published on the OpenAI De
 ## What You Get
 
 - One canonical `oracle` skill.
-- Computer Use + Chrome as the default path.
+- Chrome plugin + the user's logged-in Chrome session as the default path.
 - GPT-5.5 Pro named explicitly as the target ChatGPT Pro model.
+- A hard verification step that the visible model control says `Extended Pro`
+  or an equivalent Pro label before sending.
+- A waiting rule: never cancel Pro for duration alone; recover and re-claim the
+  tab if the Chrome plugin socket stalls.
 - A prompt shape for second-opinion engineering and product decisions.
 - Guardrails against using logged-out, free, in-app-browser, or non-Pro surfaces.
 - Legacy static dossier scripts preserved only for explicit bundle requests.
@@ -58,4 +62,4 @@ If the prompt would transmit sensitive private data to ChatGPT and that transmis
 
 ## Claude Code
 
-This plugin includes a Claude-compatible manifest, but the primary browser automation workflow is Codex-specific because it depends on Codex Computer Use controlling the local Chrome app.
+This plugin includes a Claude-compatible manifest, but the primary browser automation workflow is Codex-specific because it depends on the Codex Chrome Extension controlling the user's logged-in Chrome session.

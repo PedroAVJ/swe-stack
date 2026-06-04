@@ -1,6 +1,6 @@
 {
   "name": "oracle",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Ask ChatGPT Pro (GPT-5.5 Pro) from Codex through the user's logged-in Chrome session.",
   "author": {
     "name": "PedroAVJ",
@@ -14,13 +14,13 @@
     "chatgpt",
     "gpt-5.5-pro",
     "second-opinion",
-    "computer-use"
+    "chrome-plugin"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Oracle",
     "shortDescription": "Ask GPT-5.5 Pro through Chrome",
-    "longDescription": "Use Computer Use to operate the user's logged-in Chrome ChatGPT session, select Pro (GPT-5.5 Pro), ask one focused second-opinion prompt, and summarize the useful answer back into Codex.",
+    "longDescription": "Use the Chrome plugin / Codex Chrome Extension against the user's logged-in Chrome ChatGPT session, select and verify Pro (GPT-5.5 Pro / Extended Pro), ask one focused second-opinion prompt, wait without canceling for duration alone, and summarize the useful answer back into Codex.",
     "developerName": "PedroAVJ",
     "category": "Productivity",
     "capabilities": [

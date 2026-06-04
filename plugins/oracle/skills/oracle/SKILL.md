@@ -1,6 +1,6 @@
 ---
 name: oracle
-description: Ask the user's logged-in ChatGPT Pro model, currently GPT-5.5 Pro, through Chrome using Computer Use, wait for the answer, and bring the useful guidance back into the current Codex thread.
+description: Ask the user's logged-in ChatGPT Pro model, currently GPT-5.5 Pro, through Chrome using the Chrome plugin, wait for the answer, and bring the useful guidance back into the current Codex thread.
 metadata:
   author: Pedro
   origin: swe-stack-plugin
@@ -18,19 +18,23 @@ GPT-5.5 Pro.
 
 The default Oracle flow is live and interactive:
 
-- Use Computer Use to operate the local Chrome app directly.
-- Navigate Chrome to ChatGPT.
-- Select Pro (GPT-5.5 Pro) before sending.
+- Use the Chrome plugin / Codex Chrome Extension against the user's logged-in
+  Chrome ChatGPT session.
+- Open a fresh ChatGPT conversation unless the user explicitly asks to continue
+  an existing one.
+- Select Pro (GPT-5.5 Pro / Extended Pro) before sending.
+- Verify the visible model control says `Extended Pro` or an equivalent Pro
+  label before sending. If the model control still says `Instant`, abort.
 - Send one focused prompt.
-- Wait for the answer to finish.
+- Wait for the answer to finish, even if it takes many minutes.
 - Summarize the useful guidance back in the Codex thread.
 
 Do not use the Codex in-app Browser for Oracle. The in-app Browser cannot rely
 on the user's logged-in ChatGPT session.
 
-Do not use the Chrome plugin as the default Oracle path. It can time out on long
-Pro runs. Use it only if the user explicitly asks for that plugin or Computer
-Use is unavailable and the user approves the fallback.
+Use Computer Use only as a fallback if the Chrome plugin is unavailable,
+cannot communicate with Chrome after the standard retry/recovery checks, or the
+user explicitly asks for Computer Use.
 
 The old static dossier/zip workflow is no longer the Oracle default. The helper
 scripts under this skill directory are legacy utilities, not the primary skill
@@ -96,34 +100,39 @@ For code or repo problems, include relevant file paths and short excerpts or
 summaries. If the context is too large to paste safely, reduce it to the
 decision-critical facts before using Oracle.
 
-## Computer Use Workflow
+## Chrome Plugin Workflow
 
 1. If the Oracle question is unclear, ask one short clarifying question. If the
    current thread already makes the question clear, proceed.
 2. Build the prompt from verified local context and the user's actual goal.
-3. Use Computer Use to open or focus Google Chrome.
-4. Navigate to `https://chatgpt.com/`.
+3. Use the Chrome plugin with the Codex Chrome Extension. Start with a
+   lightweight connection check such as listing open tabs.
+4. Open a fresh ChatGPT tab at `https://chatgpt.com/`, unless the user
+   explicitly asks to continue an existing Oracle thread.
 5. Verify that the page is logged in to the user's ChatGPT account. If it is not
    logged in and no saved session is available, stop and report that Oracle is
    unavailable until the user logs in.
-6. Start a new ChatGPT conversation unless continuing an existing Oracle thread
-   is clearly required by the user's request.
-7. Open the model selector and choose Pro (GPT-5.5 Pro).
+6. Open the model selector and choose Pro (GPT-5.5 Pro / Extended Pro).
    If the selector does not expose a Pro model, stop and report that the Oracle
    surface is unavailable.
-8. Paste/send the prompt.
-9. Wait patiently. Pro can take several minutes. Observe the page periodically
-   with Computer Use until the response is complete.
-10. Extract the final answer. Do not invent the answer while ChatGPT is still
+7. Verify the visible model control after selection. It must say `Extended Pro`
+   or an equivalent Pro label before the prompt is sent. If it says `Instant`,
+   do not send.
+8. Paste/send the prompt only after the Pro verification succeeds.
+9. Wait patiently. Pro can take many minutes. Poll in short chunks and recover
+   the Chrome plugin session if the socket stalls, then re-claim the same
+   ChatGPT tab. Never cancel a Pro run merely because it is taking a long time.
+10. Extract the final answer only after the page no longer shows that ChatGPT is
     thinking.
 11. Return a concise Codex summary with the direct verdict first, then the
     actionable steps and local verification still needed.
 
 ## Browser Rules
 
-- Default: Computer Use controlling Chrome.
+- Default: Chrome plugin controlling the user's logged-in Chrome session through
+  the Codex Chrome Extension.
 - Do not use the in-app Browser.
-- Do not use the Chrome plugin by default.
+- Do not use Computer Use by default.
 - Do not use a logged-out, free, or non-Pro ChatGPT surface as the Oracle.
 - Do not bypass browser safety barriers, solve CAPTCHAs, or handle login
   challenges automatically. Ask the user to take over for those steps.
@@ -135,8 +144,12 @@ decision-critical facts before using Oracle.
 
 ## Waiting And Extraction
 
-- Pro answers can run long. Keep waiting unless the user asks to stop or the UI
-  clearly errors.
+- Pro answers can run long. Keep waiting unless the user explicitly asks to
+  stop or the UI clearly errors.
+- Never click `Stop answering` or otherwise cancel a Pro run for duration alone.
+- If a Chrome plugin call times out or the socket stalls, reset/reconnect the
+  browser runtime and re-claim the existing ChatGPT tab before deciding the run
+  failed.
 - Use screen observation or screenshots sparingly to determine whether the
   answer is still generating.
 - Avoid dumping large transcripts back into Codex. Summarize the relevant
@@ -158,4 +171,5 @@ Include:
 - Caveats, assumptions, or facts Pro said should be locally verified.
 
 If Pro was unavailable, say exactly which surface failed: Chrome login, model
-selector, Pro availability, page error, or Computer Use access.
+selector, Pro verification, page error, Chrome plugin access, or Computer Use
+fallback access.
