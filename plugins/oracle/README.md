@@ -17,6 +17,9 @@ The plugin icon uses the GPT-5.5 Pro model-card image published on the OpenAI De
   or an equivalent Pro label before sending.
 - A waiting rule: never cancel Pro for duration alone; recover and re-claim the
   tab if the Chrome plugin socket stalls.
+- A saved-history recovery rule: if the live ChatGPT tab can be listed or
+  claimed but page reads time out, reopen the saved `chatgpt.com/c/...`
+  conversation in a fresh tab and extract the completed answer there.
 - A prompt shape for second-opinion engineering and product decisions.
 - Guardrails against using logged-out, free, in-app-browser, or non-Pro surfaces.
 - Legacy static dossier scripts preserved only for explicit bundle requests.
@@ -53,6 +56,15 @@ Run this implementation plan by GPT-5.5 Pro.
 ```
 
 The skill requires the user's logged-in ChatGPT session in Chrome and will not automate login challenges, CAPTCHAs, credential prompts, or account setup.
+
+## Recovery Path
+
+If the Chrome plugin can still list or claim the ChatGPT tab but body, DOM, or
+screenshot reads time out, do not assume the Pro answer is lost. Use Chrome open
+tabs or history to find the saved `https://chatgpt.com/c/...` conversation URL,
+open that URL in a fresh tab, wait for the conversation to load, and extract the
+completed answer from the fresh tab. Only start a duplicate Oracle run after
+this saved-history recovery path has failed.
 
 ## Privacy And Source Checks
 

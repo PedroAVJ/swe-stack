@@ -122,9 +122,14 @@ decision-critical facts before using Oracle.
 9. Wait patiently. Pro can take many minutes. Poll in short chunks and recover
    the Chrome plugin session if the socket stalls, then re-claim the same
    ChatGPT tab. Never cancel a Pro run merely because it is taking a long time.
-10. Extract the final answer only after the page no longer shows that ChatGPT is
+10. If the tab can be listed or claimed but page body, DOM, or screenshot reads
+    keep timing out, treat the live tab as wedged rather than treating the
+    Oracle run as lost. Recover the saved conversation URL from the tab list or
+    Chrome history, open that `https://chatgpt.com/c/...` URL in a fresh tab,
+    and extract the answer there.
+11. Extract the final answer only after the page no longer shows that ChatGPT is
     thinking.
-11. Return a concise Codex summary with the direct verdict first, then the
+12. Return a concise Codex summary with the direct verdict first, then the
     actionable steps and local verification still needed.
 
 ## Browser Rules
@@ -150,6 +155,14 @@ decision-critical facts before using Oracle.
 - If a Chrome plugin call times out or the socket stalls, reset/reconnect the
   browser runtime and re-claim the existing ChatGPT tab before deciding the run
   failed.
+- If Chrome can still list or claim the ChatGPT tab but body, DOM, or screenshot
+  reads keep timing out, use saved-history recovery before starting over:
+  recover the current `https://chatgpt.com/c/...` URL from open tabs or Chrome
+  history, open it in a fresh tab, wait for the saved conversation to load, and
+  extract the completed answer from the fresh tab.
+- Do not start a duplicate Oracle run until the fresh-tab history recovery path
+  has been tried. If it succeeds, summarize that answer and mention that the
+  original live tab's extraction path wedged.
 - Use screen observation or screenshots sparingly to determine whether the
   answer is still generating.
 - Avoid dumping large transcripts back into Codex. Summarize the relevant
