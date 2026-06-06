@@ -176,6 +176,21 @@ test("skill documents the temporary MCP collision workaround", () => {
   assert.match(skill, /whatsapp --json chats list/i);
 });
 
+test("audio transcription is explicit and cached through the CLI", () => {
+  const cli = fs.readFileSync(path.join(pluginRoot, "cli", "whatsapp_cli.py"), "utf8");
+  const skill = fs.readFileSync(path.join(pluginRoot, "skills", "whatsapp", "SKILL.md"), "utf8");
+  const readme = fs.readFileSync(path.join(pluginRoot, "README.md"), "utf8");
+
+  assert.match(cli, /media_transcripts/);
+  assert.match(cli, /media_transcribe = media_sub\.add_parser/);
+  assert.match(cli, /TRANSCRIPT_PROVIDER = "elevenlabs"/);
+  assert.match(cli, /WHATSAPP_TRANSCRIPTS_DB_PATH/);
+  assert.match(cli, /--refresh/);
+  assert.match(skill, /media transcribe MESSAGE_ID/);
+  assert.match(skill, /Do not transcribe every audio message/i);
+  assert.match(readme, /Audio transcription is explicit and cached/i);
+});
+
 test("list_messages returns structured reply metadata", () => {
   const mcpServerDir = path.join(
     pluginRoot,

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import shutil
@@ -30,6 +31,11 @@ RESET_SYNC = SCRIPT_DIR / "reset_sync.sh"
 DEFAULT_DRAFTS_DB_PATH = Path(
     os.environ.get("WHATSAPP_DRAFTS_DB_PATH", "~/.local/share/codex-whatsapp/drafts.db")
 ).expanduser()
+DEFAULT_TRANSCRIPTS_DB_PATH = Path(
+    os.environ.get("WHATSAPP_TRANSCRIPTS_DB_PATH", "~/.local/share/codex-whatsapp/transcripts.db")
+).expanduser()
+TRANSCRIPT_PROVIDER = "elevenlabs"
+AUDIO_MEDIA_TYPES = {"audio", "ptt", "voice", "voice_message"}
 
 
 class CliError(Exception):
@@ -760,6 +766,389 @@ def command_media_download(args: argparse.Namespace) -> dict[str, Any]:
     return result if isinstance(result, dict) else {"result": result}
 
 
+def transcripts_db_path() -> Path:
+    if os.environ.get("WHATSAPP_TRANSCRIPTS_DB_PATH"):
+        return DEFAULT_TRANSCRIPTS_DB_PATH
+    try:
+        db_info = backend_json("db-path", timeout=30)
+        if isinstance(db_info, dict) and db_info.get("messages_db_path"):
+            return Path(db_info["messages_db_path"]).with_name("transcripts.db")
+    except CliError:
+        pass
+    return DEFAULT_TRANSCRIPTS_DB_PATH
+
+
+def transcript_store_dir() -> Path:
+    return transcripts_db_path().with_name("transcripts")
+
+
+def open_transcripts_db() -> sqlite3.Connection:
+    path = transcripts_db_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(path)
+    conn.row_factory = sqlite3.Row
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS media_transcripts (
+            id TEXT PRIMARY KEY,
+            message_id TEXT NOT NULL,
+            chat_jid TEXT NOT NULL,
+            sender TEXT,
+            timestamp TEXT,
+            media_type TEXT,
+            media_path TEXT NOT NULL,
+            transcript_path TEXT NOT NULL,
+            provider TEXT NOT NULL,
+            model TEXT NOT NULL,
+            language TEXT,
+            response_format TEXT NOT NULL,
+            options_hash TEXT NOT NULL,
+            options_json TEXT NOT NULL,
+            text TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            UNIQUE(message_id, chat_jid, provider, model, options_hash)
+        )
+        """
+    )
+    conn.execute(
+        """
+        CREATE INDEX IF NOT EXISTS idx_media_transcripts_chat_updated
+        ON media_transcripts (chat_jid, updated_at DESC)
+        """
+    )
+    conn.commit()
+    return conn
+
+
+def row_to_transcript(row: sqlite3.Row) -> dict[str, Any]:
+    try:
+        options = json.loads(row["options_json"])
+    except json.JSONDecodeError:
+        options = {}
+    return {
+        "id": row["id"],
+        "message_id": row["message_id"],
+        "chat_jid": row["chat_jid"],
+        "sender": row["sender"],
+        "timestamp": row["timestamp"],
+        "media_type": row["media_type"],
+        "media_path": row["media_path"],
+        "transcript_path": row["transcript_path"],
+        "provider": row["provider"],
+        "model": row["model"],
+        "language": row["language"],
+        "response_format": row["response_format"],
+        "options_hash": row["options_hash"],
+        "options": options,
+        "text": row["text"],
+        "created_at": row["created_at"],
+        "updated_at": row["updated_at"],
+    }
+
+
+def transcript_options(args: argparse.Namespace) -> dict[str, Any]:
+    return {
+        "model": args.model,
+        "language": args.language,
+        "response_format": args.response_format,
+        "diarize": bool(args.diarize),
+        "num_speakers": args.num_speakers,
+        "keyterms": sorted(args.keyterm or []),
+        "no_verbatim": bool(args.no_verbatim),
+    }
+
+
+def transcript_options_hash(options: dict[str, Any]) -> str:
+    encoded = json.dumps(options, ensure_ascii=True, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def transcript_file_extension(response_format: str) -> str:
+    return "txt" if response_format in {"text", "diarized_text"} else "json"
+
+
+def safe_path_part(value: str) -> str:
+    safe = "".join(char if char.isalnum() or char in {"-", "_", "."} else "_" for char in value)
+    return safe[:120] or "unknown"
+
+
+def transcript_output_path(message_id: str, chat_jid: str, response_format: str, options_hash: str) -> Path:
+    filename = (
+        f"{safe_path_part(chat_jid)}__{safe_path_part(message_id)}__"
+        f"{options_hash[:12]}.transcript.{transcript_file_extension(response_format)}"
+    )
+    return transcript_store_dir() / filename
+
+
+def cached_transcript(
+    conn: sqlite3.Connection,
+    *,
+    message_id: str,
+    chat_jid: str,
+    provider: str,
+    model: str,
+    options_hash: str,
+) -> dict[str, Any] | None:
+    row = conn.execute(
+        """
+        SELECT * FROM media_transcripts
+        WHERE message_id = ? AND chat_jid = ? AND provider = ? AND model = ? AND options_hash = ?
+        """,
+        (message_id, chat_jid, provider, model, options_hash),
+    ).fetchone()
+    return row_to_transcript(row) if row else None
+
+
+def cached_transcript_by_message(
+    conn: sqlite3.Connection,
+    *,
+    message_id: str,
+    chat_jid: str | None,
+) -> dict[str, Any]:
+    clauses = ["message_id = ?"]
+    values: list[Any] = [message_id]
+    if chat_jid:
+        clauses.append("chat_jid = ?")
+        values.append(chat_jid)
+    row = conn.execute(
+        f"SELECT * FROM media_transcripts WHERE {' AND '.join(clauses)} ORDER BY updated_at DESC LIMIT 1",
+        values,
+    ).fetchone()
+    if row is None:
+        raise CliError(
+            "Cached transcript not found.",
+            code="transcript_not_found",
+            details={"message_id": message_id, "chat_jid": chat_jid},
+        )
+    return row_to_transcript(row)
+
+
+def media_message_metadata(message_id: str, chat_jid: str) -> dict[str, Any]:
+    context = backend_json(
+        "get-message-context",
+        message_id,
+        "--before",
+        "0",
+        "--after",
+        "0",
+        timeout=30,
+    )
+    message = context.get("message") if isinstance(context, dict) else None
+    if not isinstance(message, dict) or not message.get("id"):
+        raise CliError("Media message was not found.", code="message_not_found", details={"message_id": message_id})
+    if message.get("chat_jid") != chat_jid:
+        raise CliError(
+            "Media message belongs to a different chat.",
+            code="message_chat_mismatch",
+            details={"message_id": message_id, "chat_jid": chat_jid, "message_chat_jid": message.get("chat_jid")},
+        )
+    return message_summary(message, load_identity_context())
+
+
+def elevenlabs_transcribe_script() -> Path:
+    env_path = os.environ.get("ELEVENLABS_TRANSCRIBE_SCRIPT")
+    candidates = []
+    if env_path:
+        candidates.append(Path(env_path).expanduser())
+    candidates.extend(
+        [
+            SOURCE_ROOT.parent / "elevenlabs" / "scripts" / "transcribe_elevenlabs.py",
+            SOURCE_ROOT.parent / "elevenlabs" / "0.1.0" / "scripts" / "transcribe_elevenlabs.py",
+        ]
+    )
+    if len(SOURCE_ROOT.parents) > 1:
+        candidates.append(SOURCE_ROOT.parents[1] / "elevenlabs" / "0.1.0" / "scripts" / "transcribe_elevenlabs.py")
+    candidates.append(
+        Path("~/.codex/plugins/cache/swe-stack/elevenlabs/0.1.0/scripts/transcribe_elevenlabs.py").expanduser()
+    )
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    raise CliError(
+        "ElevenLabs transcription helper was not found.",
+        code="missing_elevenlabs_helper",
+        details={"candidates": [str(candidate) for candidate in candidates]},
+    )
+
+
+def run_elevenlabs_transcribe(audio_path: Path, output_path: Path, args: argparse.Namespace) -> str:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    script = elevenlabs_transcribe_script()
+    cmd = [
+        "python3",
+        str(script),
+        str(audio_path),
+        "--model",
+        args.model,
+        "--response-format",
+        args.response_format,
+        "--out",
+        str(output_path),
+        "--timeout-seconds",
+        str(args.timeout_seconds),
+    ]
+    if args.language:
+        cmd.extend(["--language", args.language])
+    if args.diarize:
+        cmd.append("--diarize")
+    if args.num_speakers is not None:
+        cmd.extend(["--num-speakers", str(args.num_speakers)])
+    if args.no_verbatim:
+        cmd.append("--no-verbatim")
+    for keyterm in args.keyterm or []:
+        cmd.extend(["--keyterm", keyterm])
+
+    process = run_process(cmd, timeout=args.timeout_seconds + 30)
+    if process.returncode != 0:
+        raise CliError(
+            "ElevenLabs transcription failed.",
+            code="elevenlabs_failed",
+            details={
+                "returncode": process.returncode,
+                "stdout": process.stdout.strip()[-4000:],
+                "stderr": process.stderr.strip()[-4000:],
+            },
+        )
+    try:
+        return output_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise CliError(
+            "ElevenLabs completed but transcript output could not be read.",
+            code="transcript_read_failed",
+            details={"transcript_path": str(output_path), "error": str(exc)},
+        ) from exc
+
+
+def command_media_transcribe(args: argparse.Namespace) -> dict[str, Any]:
+    options = transcript_options(args)
+    options_hash = transcript_options_hash(options)
+    with open_transcripts_db() as conn:
+        if not args.refresh:
+            existing = cached_transcript(
+                conn,
+                message_id=args.message_id,
+                chat_jid=args.chat_jid,
+                provider=TRANSCRIPT_PROVIDER,
+                model=args.model,
+                options_hash=options_hash,
+            )
+            if existing:
+                return {
+                    "cached": True,
+                    "transcript": existing,
+                    "transcripts_db_path": str(transcripts_db_path()),
+                }
+
+        message = media_message_metadata(args.message_id, args.chat_jid)
+        media_type = (message.get("media_type") or "").lower()
+        if media_type not in AUDIO_MEDIA_TYPES and not args.allow_non_audio:
+            raise CliError(
+                "Refusing to transcribe non-audio media. Pass --allow-non-audio to override.",
+                code="not_audio_media",
+                details={"message_id": args.message_id, "media_type": message.get("media_type")},
+            )
+
+        download = command_media_download(args)
+        media_path_value = first_text(download.get("file_path"), download.get("path"), download.get("media_path"))
+        if not media_path_value:
+            raise CliError("Downloaded media path was missing.", code="missing_download_path", details={"download": download})
+        media_path = Path(media_path_value).expanduser()
+        if not media_path.exists():
+            raise CliError(
+                "Downloaded media path does not exist.",
+                code="download_missing",
+                details={"media_path": str(media_path), "download": download},
+            )
+
+        output_path = transcript_output_path(args.message_id, args.chat_jid, args.response_format, options_hash)
+        text = run_elevenlabs_transcribe(media_path, output_path, args)
+        now = utc_now()
+        transcript_id = f"transcript_{uuid.uuid4().hex[:12]}"
+        options_json = json.dumps(options, ensure_ascii=True, sort_keys=True)
+        conn.execute(
+            """
+            INSERT INTO media_transcripts (
+                id, message_id, chat_jid, sender, timestamp, media_type, media_path,
+                transcript_path, provider, model, language, response_format,
+                options_hash, options_json, text, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(message_id, chat_jid, provider, model, options_hash)
+            DO UPDATE SET
+                sender = excluded.sender,
+                timestamp = excluded.timestamp,
+                media_type = excluded.media_type,
+                media_path = excluded.media_path,
+                transcript_path = excluded.transcript_path,
+                language = excluded.language,
+                response_format = excluded.response_format,
+                options_json = excluded.options_json,
+                text = excluded.text,
+                updated_at = excluded.updated_at
+            """,
+            (
+                transcript_id,
+                args.message_id,
+                args.chat_jid,
+                message.get("sender"),
+                message.get("timestamp"),
+                message.get("media_type"),
+                str(media_path),
+                str(output_path),
+                TRANSCRIPT_PROVIDER,
+                args.model,
+                args.language,
+                args.response_format,
+                options_hash,
+                options_json,
+                text,
+                now,
+                now,
+            ),
+        )
+        conn.commit()
+        transcript = cached_transcript(
+            conn,
+            message_id=args.message_id,
+            chat_jid=args.chat_jid,
+            provider=TRANSCRIPT_PROVIDER,
+            model=args.model,
+            options_hash=options_hash,
+        )
+    return {
+        "cached": False,
+        "transcript": transcript,
+        "download": download,
+        "transcripts_db_path": str(transcripts_db_path()),
+    }
+
+
+def command_media_transcripts_list(args: argparse.Namespace) -> dict[str, Any]:
+    if args.limit < 1:
+        raise CliError("media transcripts list --limit must be greater than zero.", code="invalid_limit")
+    clauses: list[str] = []
+    values: list[Any] = []
+    if args.chat_jid:
+        clauses.append("chat_jid = ?")
+        values.append(args.chat_jid)
+    if args.message_id:
+        clauses.append("message_id = ?")
+        values.append(args.message_id)
+    where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
+    with open_transcripts_db() as conn:
+        rows = conn.execute(
+            f"SELECT * FROM media_transcripts {where} ORDER BY updated_at DESC LIMIT ?",
+            (*values, args.limit),
+        ).fetchall()
+    return {"transcripts": [row_to_transcript(row) for row in rows], "transcripts_db_path": str(transcripts_db_path())}
+
+
+def command_media_transcripts_show(args: argparse.Namespace) -> dict[str, Any]:
+    with open_transcripts_db() as conn:
+        transcript = cached_transcript_by_message(conn, message_id=args.message_id, chat_jid=args.chat_jid)
+    return {"transcript": transcript, "transcripts_db_path": str(transcripts_db_path())}
+
+
 def utc_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
@@ -1308,6 +1697,42 @@ def build_parser() -> argparse.ArgumentParser:
     media_download.add_argument("message_id")
     media_download.add_argument("chat_jid")
     media_download.set_defaults(func=command_media_download)
+    media_transcribe = media_sub.add_parser(
+        "transcribe",
+        help="Transcribe one requested audio message with ElevenLabs and cache the result.",
+    )
+    media_transcribe.add_argument("message_id")
+    media_transcribe.add_argument("chat_jid")
+    media_transcribe.add_argument("--language", help="Optional language hint such as 'es'.")
+    media_transcribe.add_argument("--model", default="scribe_v2")
+    media_transcribe.add_argument(
+        "--response-format",
+        default="text",
+        choices=["text", "json", "diarized_text", "segments_json"],
+    )
+    media_transcribe.add_argument("--diarize", action="store_true")
+    media_transcribe.add_argument("--num-speakers", type=int)
+    media_transcribe.add_argument("--keyterm", action="append", default=[])
+    media_transcribe.add_argument("--no-verbatim", action="store_true")
+    media_transcribe.add_argument("--refresh", action="store_true", help="Ignore a cached transcript and call ElevenLabs again.")
+    media_transcribe.add_argument(
+        "--allow-non-audio",
+        action="store_true",
+        help="Allow transcription attempts for media types other than WhatsApp audio.",
+    )
+    media_transcribe.add_argument("--timeout-seconds", type=int, default=1800)
+    media_transcribe.set_defaults(func=command_media_transcribe)
+    media_transcripts = media_sub.add_parser("transcripts", help="Inspect cached media transcripts.")
+    media_transcripts_sub = media_transcripts.add_subparsers(dest="media_transcripts_command", required=True)
+    media_transcripts_list = media_transcripts_sub.add_parser("list", help="List cached media transcripts.")
+    media_transcripts_list.add_argument("--chat-jid")
+    media_transcripts_list.add_argument("--message-id")
+    media_transcripts_list.add_argument("--limit", type=int, default=20)
+    media_transcripts_list.set_defaults(func=command_media_transcripts_list)
+    media_transcripts_show = media_transcripts_sub.add_parser("show", help="Show the latest cached transcript for a message.")
+    media_transcripts_show.add_argument("message_id")
+    media_transcripts_show.add_argument("--chat-jid")
+    media_transcripts_show.set_defaults(func=command_media_transcripts_show)
 
     drafts = subparsers.add_parser("drafts", help="Create, review, update, and send local WhatsApp drafts.")
     drafts_sub = drafts.add_subparsers(dest="drafts_command", required=True)

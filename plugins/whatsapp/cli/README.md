@@ -67,6 +67,9 @@ whatsapp --json chats get "15551234567@s.whatsapp.net"
 whatsapp --json messages list --chat-jid "15551234567@s.whatsapp.net" --limit 30
 whatsapp --json messages context MESSAGE_ID --before 5 --after 5
 whatsapp --json media download MESSAGE_ID "15551234567@s.whatsapp.net"
+whatsapp --json media transcribe MESSAGE_ID "15551234567@s.whatsapp.net" --language es
+whatsapp --json media transcripts list --chat-jid "15551234567@s.whatsapp.net"
+whatsapp --json media transcripts show MESSAGE_ID --chat-jid "15551234567@s.whatsapp.net"
 whatsapp --json drafts create --chat-jid "15551234567@s.whatsapp.net" --text "Thanks, received."
 printf 'Line 1\n\nLine 2\n' | whatsapp --json drafts create --chat-jid "15551234567@s.whatsapp.net" --text-stdin
 whatsapp --json drafts create --chat-jid "15551234567@s.whatsapp.net" --text-file ./reply.txt
@@ -94,6 +97,16 @@ Live sends are guarded:
 - `--reply-to-message-id` sends a WhatsApp quoted reply. The CLI validates that the quoted message exists in the same chat before dry-run or live send.
 - WhatsApp Status/Broadcast targets are rejected.
 - For multiline text, use `--text-stdin` or `--text-file`. Literal `\n` or `\r` sequences in `--text` are preserved as literal characters, surfaced as warnings, and blocked on live sends unless `--allow-literal-escapes` is passed.
+
+## Audio Transcripts
+
+`media transcribe` is opt-in for one requested audio message. It downloads that
+message's media, calls the ElevenLabs Scribe helper only on a cache miss, and
+stores the transcript in `transcripts.db` next to the bridge message database
+or at `WHATSAPP_TRANSCRIPTS_DB_PATH` when set.
+
+Use `--refresh` to force a new ElevenLabs call. Do not use `messages list` as a
+transcription trigger; listings only reveal which messages have audio.
 
 ## Guardrails
 

@@ -13,6 +13,8 @@ This project is unofficial and is not affiliated with WhatsApp or Meta.
 - Local WhatsApp linked-device bridge.
 - SQLite-backed reads over contacts, chats, messages, context, and media.
 - A composable JSON CLI designed for agents: `whatsapp --json ...`.
+- Opt-in ElevenLabs transcription for specific audio messages with a local
+  SQLite transcript cache.
 - Local draft records before sending.
 - Live-send guardrails: `--dry-run` or explicit `--confirm` is required.
 - Codex and Claude Code plugin metadata.
@@ -103,7 +105,16 @@ whatsapp --json chats list --query "Alice" --limit 10 --no-last-message
 whatsapp --json messages list --chat-jid "15551234567@s.whatsapp.net" --limit 30
 whatsapp --json messages context MESSAGE_ID --before 5 --after 5
 whatsapp --json media download MESSAGE_ID "15551234567@s.whatsapp.net"
+whatsapp --json media transcribe MESSAGE_ID "15551234567@s.whatsapp.net" --language es
+whatsapp --json media transcripts show MESSAGE_ID --chat-jid "15551234567@s.whatsapp.net"
 ```
+
+Audio transcription is explicit and cached. `messages list` and `messages
+context` never transcribe audio automatically. Use `media transcribe` only for
+the particular audio message needed for a task; repeated calls return the cached
+transcript unless `--refresh` is passed. The command uses the sibling
+ElevenLabs plugin helper when available and requires `ELEVENLABS_API_KEY` only
+on cache misses.
 
 ## Use With Claude Code
 
@@ -151,6 +162,8 @@ Important environment variables:
 - `WHATSAPP_PLUGIN_STATE_ROOT`: override the local state root.
 - `WHATSAPP_SOURCE_ROOT`: point the CLI at a different plugin checkout.
 - `WHATSAPP_DRAFTS_DB_PATH`: override the local drafts database path.
+- `WHATSAPP_TRANSCRIPTS_DB_PATH`: override the local audio transcript cache database path.
+- `ELEVENLABS_TRANSCRIBE_SCRIPT`: override the ElevenLabs Scribe helper path used by `media transcribe`.
 - `WHATSAPP_MCP_HTTP_PORT`: override the local bridge port.
 - `WHATSAPP_MCP_PAIR_PHONE`: explicit phone-number pairing fallback.
 
