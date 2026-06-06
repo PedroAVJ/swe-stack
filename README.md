@@ -94,6 +94,11 @@ cd plugins/whatsapp
 ./bin/whatsapp --json doctor
 ```
 
+For plugin releases, use
+[`swe-stack-plugin-release`](./.agents/skills/swe-stack-plugin-release/SKILL.md).
+It captures the Codex and Claude Code version bump, marketplace upgrade, and
+cache verification workflow.
+
 ## Status
 
 This is an early open-source extraction of a real working local agent stack. Expect the repo shape to evolve as more custom modules become public.
