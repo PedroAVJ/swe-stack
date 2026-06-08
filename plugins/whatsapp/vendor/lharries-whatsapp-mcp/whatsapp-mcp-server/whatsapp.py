@@ -1,6 +1,6 @@
 import sqlite3
 from datetime import datetime
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional, List, Tuple
 import os.path
 import requests
@@ -33,6 +33,14 @@ def _jid_user(jid):
 
 def _is_numeric_label(value):
     return isinstance(value, str) and value.isdigit()
+
+
+def _parse_optional_datetime(value):
+    if value is None or value == "":
+        return None
+    if isinstance(value, datetime):
+        return value
+    return datetime.fromisoformat(value)
 
 
 def _load_identity_context():
@@ -152,6 +160,30 @@ def _chat_matches_query(chat, query, context):
     fields = [chat.name, chat.jid, phone_number]
     return any(isinstance(value, str) and needle in value.casefold() for value in fields)
 
+
+@dataclass
+class MessageReaction:
+    sender: str
+    emoji: str
+    timestamp: Optional[datetime] = None
+    reaction_message_id: Optional[str] = None
+    target_message_id: Optional[str] = None
+    target_sender: Optional[str] = None
+    grouping_key: Optional[str] = None
+    sender_timestamp_ms: Optional[int] = None
+    is_from_me: Optional[bool] = None
+
+
+@dataclass
+class MessageReceipt:
+    sender: str
+    type: str
+    timestamp: Optional[datetime] = None
+    message_id: Optional[str] = None
+    chat_jid: Optional[str] = None
+    message_sender: Optional[str] = None
+
+
 @dataclass
 class Message:
     timestamp: datetime
@@ -166,6 +198,9 @@ class Message:
     reply_to_sender: Optional[str] = None
     reply_preview: Optional[str] = None
     reply_media_type: Optional[str] = None
+    reactions: List[MessageReaction] = field(default_factory=list)
+    receipts: List[MessageReceipt] = field(default_factory=list)
+    seen_by: List[MessageReceipt] = field(default_factory=list)
 
 @dataclass
 class Chat:
@@ -272,6 +307,110 @@ def row_to_message(row: Tuple) -> Message:
         reply_preview=row[10],
         reply_media_type=row[11]
     )
+
+
+def _table_exists(cursor, table_name: str) -> bool:
+    cursor.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?",
+        (table_name,),
+    )
+    return cursor.fetchone() is not None
+
+
+def attach_message_metadata(cursor, messages: List[Message]) -> None:
+    if not messages:
+        return
+
+    keys = sorted({(message.chat_jid, message.id) for message in messages})
+    key_to_messages = {}
+    for message in messages:
+        key_to_messages.setdefault((message.chat_jid, message.id), []).append(message)
+
+    if _table_exists(cursor, "message_reactions"):
+        clauses = " OR ".join(["(chat_jid = ? AND target_message_id = ?)"] * len(keys))
+        params = []
+        for chat_jid, message_id in keys:
+            params.extend([chat_jid, message_id])
+
+        cursor.execute(
+            f"""
+            SELECT
+                chat_jid,
+                target_message_id,
+                target_sender,
+                reaction_sender,
+                emoji,
+                reaction_message_id,
+                grouping_key,
+                sender_timestamp_ms,
+                timestamp,
+                is_from_me
+            FROM message_reactions
+            WHERE emoji != '' AND ({clauses})
+            ORDER BY timestamp ASC, reaction_sender ASC
+            """,
+            tuple(params),
+        )
+        for (
+            chat_jid,
+            target_message_id,
+            target_sender,
+            reaction_sender,
+            emoji,
+            reaction_message_id,
+            grouping_key,
+            sender_timestamp_ms,
+            timestamp,
+            is_from_me,
+        ) in cursor.fetchall():
+            reaction = MessageReaction(
+                sender=reaction_sender,
+                emoji=emoji,
+                timestamp=_parse_optional_datetime(timestamp),
+                reaction_message_id=reaction_message_id,
+                target_message_id=target_message_id,
+                target_sender=target_sender or None,
+                grouping_key=grouping_key,
+                sender_timestamp_ms=sender_timestamp_ms,
+                is_from_me=bool(is_from_me) if is_from_me is not None else None,
+            )
+            for message in key_to_messages.get((chat_jid, target_message_id), []):
+                message.reactions.append(reaction)
+
+    if _table_exists(cursor, "message_receipts"):
+        clauses = " OR ".join(["(chat_jid = ? AND message_id = ?)"] * len(keys))
+        params = []
+        for chat_jid, message_id in keys:
+            params.extend([chat_jid, message_id])
+
+        cursor.execute(
+            f"""
+            SELECT
+                message_id,
+                chat_jid,
+                receipt_type,
+                receipt_sender,
+                message_sender,
+                timestamp
+            FROM message_receipts
+            WHERE {clauses}
+            ORDER BY timestamp ASC, receipt_sender ASC
+            """,
+            tuple(params),
+        )
+        for message_id, chat_jid, receipt_type, receipt_sender, message_sender, timestamp in cursor.fetchall():
+            receipt = MessageReceipt(
+                sender=receipt_sender,
+                type=receipt_type,
+                timestamp=_parse_optional_datetime(timestamp),
+                message_id=message_id,
+                chat_jid=chat_jid,
+                message_sender=message_sender or None,
+            )
+            for message in key_to_messages.get((chat_jid, message_id), []):
+                message.receipts.append(receipt)
+                if receipt.type == "read":
+                    message.seen_by.append(receipt)
 
 
 def format_reply_prefix(message: Message) -> str:
@@ -411,6 +550,8 @@ def list_messages(
             )
             result.append(message)
 
+        attach_message_metadata(cursor, result)
+
         if include_context and result:
             # Add context for each message
             messages_with_context = []
@@ -487,6 +628,8 @@ def get_message_context(
         after_messages = []
         for msg in cursor.fetchall():
             after_messages.append(row_to_message(msg))
+
+        attach_message_metadata(cursor, [*before_messages, target_message, *after_messages])
 
         return MessageContext(
             message=target_message,

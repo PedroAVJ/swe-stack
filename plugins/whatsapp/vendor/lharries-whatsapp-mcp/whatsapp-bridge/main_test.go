@@ -61,6 +61,136 @@ func TestMessageSenderJIDFallsBackToDirectChatJID(t *testing.T) {
 	}
 }
 
+func TestExtractReactionMetadataReadsPlainReaction(t *testing.T) {
+	timestamp := time.Unix(1_700_000_000, 0)
+	evt := &events.Message{
+		Info: types.MessageInfo{
+			MessageSource: types.MessageSource{
+				Chat:   types.NewJID("120363424447729748", types.GroupServer),
+				Sender: types.NewJID("15551230001", types.DefaultUserServer),
+			},
+			ID:        types.MessageID("REACTION-ID"),
+			Timestamp: timestamp,
+		},
+		Message: &waProto.Message{
+			ReactionMessage: &waProto.ReactionMessage{
+				Key: &waProto.MessageKey{
+					RemoteJID:   proto.String("120363424447729748@g.us"),
+					ID:          proto.String("TARGET-ID"),
+					Participant: proto.String("15550987654@s.whatsapp.net"),
+				},
+				Text:              proto.String("+1"),
+				GroupingKey:       proto.String("grouping-key"),
+				SenderTimestampMS: proto.Int64(1_700_000_001_000),
+			},
+		},
+	}
+
+	reaction, ok := extractReactionMetadata(nil, evt, "REACTION-ID", evt.Message, nil)
+	if !ok {
+		t.Fatal("extractReactionMetadata() did not detect reaction")
+	}
+	if reaction.ChatJID != "120363424447729748@g.us" {
+		t.Fatalf("ChatJID = %q", reaction.ChatJID)
+	}
+	if reaction.TargetMessageID != "TARGET-ID" {
+		t.Fatalf("TargetMessageID = %q", reaction.TargetMessageID)
+	}
+	if reaction.TargetSender != "15550987654@s.whatsapp.net" {
+		t.Fatalf("TargetSender = %q", reaction.TargetSender)
+	}
+	if reaction.Sender != "15551230001@s.whatsapp.net" {
+		t.Fatalf("Sender = %q", reaction.Sender)
+	}
+	if reaction.Emoji != "+1" {
+		t.Fatalf("Emoji = %q", reaction.Emoji)
+	}
+	if reaction.GroupingKey != "grouping-key" {
+		t.Fatalf("GroupingKey = %q", reaction.GroupingKey)
+	}
+	if !reaction.Timestamp.Equal(timestamp) {
+		t.Fatalf("Timestamp = %s, want %s", reaction.Timestamp, timestamp)
+	}
+}
+
+func TestStoreReactionUpsertsAndRemovesCurrentReaction(t *testing.T) {
+	t.Setenv("WHATSAPP_MCP_STORE_DIR", t.TempDir())
+
+	store, err := NewMessageStore()
+	if err != nil {
+		t.Fatalf("NewMessageStore() error = %v", err)
+	}
+	defer store.Close()
+
+	reaction := ReactionMetadata{
+		ReactionMessageID: "REACTION-ID",
+		ChatJID:           "chat@g.us",
+		TargetMessageID:   "TARGET-ID",
+		Sender:            "15551230001@s.whatsapp.net",
+		Emoji:             "+1",
+		Timestamp:         time.Unix(1_700_000_000, 0),
+	}
+	if err := store.StoreReaction(reaction); err != nil {
+		t.Fatalf("StoreReaction() error = %v", err)
+	}
+
+	reaction.ReactionMessageID = "REACTION-ID-2"
+	reaction.Emoji = "ok"
+	if err := store.StoreReaction(reaction); err != nil {
+		t.Fatalf("StoreReaction() update error = %v", err)
+	}
+
+	var emoji string
+	var count int
+	if err := store.db.QueryRow("SELECT emoji, COUNT(*) FROM message_reactions WHERE chat_jid = ? AND target_message_id = ?", "chat@g.us", "TARGET-ID").Scan(&emoji, &count); err != nil {
+		t.Fatalf("SELECT reaction error = %v", err)
+	}
+	if emoji != "ok" || count != 1 {
+		t.Fatalf("reaction row = (%q, %d), want (ok, 1)", emoji, count)
+	}
+
+	reaction.Emoji = ""
+	if err := store.StoreReaction(reaction); err != nil {
+		t.Fatalf("StoreReaction() remove error = %v", err)
+	}
+	if err := store.db.QueryRow("SELECT COUNT(*) FROM message_reactions").Scan(&count); err != nil {
+		t.Fatalf("COUNT reactions error = %v", err)
+	}
+	if count != 0 {
+		t.Fatalf("reaction count = %d, want 0", count)
+	}
+}
+
+func TestStoreReceiptPersistsReadReceipt(t *testing.T) {
+	t.Setenv("WHATSAPP_MCP_STORE_DIR", t.TempDir())
+
+	store, err := NewMessageStore()
+	if err != nil {
+		t.Fatalf("NewMessageStore() error = %v", err)
+	}
+	defer store.Close()
+
+	timestamp := time.Unix(1_700_000_000, 0)
+	if err := store.StoreReceipt(
+		"MSG-ID",
+		"15550987654@s.whatsapp.net",
+		normalizeReceiptType(types.ReceiptTypeRead),
+		"15550987654@s.whatsapp.net",
+		"me",
+		timestamp,
+	); err != nil {
+		t.Fatalf("StoreReceipt() error = %v", err)
+	}
+
+	var receiptType, receiptSender, messageSender string
+	if err := store.db.QueryRow("SELECT receipt_type, receipt_sender, message_sender FROM message_receipts WHERE message_id = ?", "MSG-ID").Scan(&receiptType, &receiptSender, &messageSender); err != nil {
+		t.Fatalf("SELECT receipt error = %v", err)
+	}
+	if receiptType != "read" || receiptSender != "15550987654@s.whatsapp.net" || messageSender != "me" {
+		t.Fatalf("receipt row = (%q, %q, %q)", receiptType, receiptSender, messageSender)
+	}
+}
+
 func TestBuildReplyContextPreservesFullParticipantJID(t *testing.T) {
 	contextInfo := buildReplyContext(ReplyMetadata{
 		MessageID: "3AEE6D27A072B2867813",

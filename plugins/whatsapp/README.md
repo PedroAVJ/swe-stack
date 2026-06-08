@@ -11,7 +11,8 @@ This project is unofficial and is not affiliated with WhatsApp or Meta.
 ## What You Get
 
 - Local WhatsApp linked-device bridge.
-- SQLite-backed reads over contacts, chats, messages, context, and media.
+- SQLite-backed reads over contacts, chats, messages, reactions, read receipts,
+  context, and media.
 - A composable JSON CLI designed for agents: `whatsapp --json ...`.
 - Opt-in ElevenLabs transcription for specific audio messages with a local
   SQLite transcript cache.
@@ -108,6 +109,12 @@ whatsapp --json media download MESSAGE_ID "15551234567@s.whatsapp.net"
 whatsapp --json media transcribe MESSAGE_ID "15551234567@s.whatsapp.net" --language es
 whatsapp --json media transcripts show MESSAGE_ID --chat-jid "15551234567@s.whatsapp.net"
 ```
+
+`messages list` and `messages context` include reaction and receipt metadata on
+each message when the bridge has observed it. Reactions are exposed as
+`reactions`; receipts are exposed as `receipts`, with `seen_by` as a convenience
+list for `read` receipts. This is message receipt data, not online presence or
+last-active tracking.
 
 Audio transcription is explicit and cached. `messages list` and `messages
 context` never transcribe audio automatically. Use `media transcribe` only for

@@ -52,6 +52,10 @@ Chat results include both machine fields and user-facing fields:
 
 Use `display_name`, `phone_number`, and `chat_type` in summaries. Keep raw `jid` values for follow-up CLI calls, not user-facing explanations.
 
+Message results may include `reactions`, `receipts`, and `seen_by` arrays when
+the bridge has observed those events. `seen_by` is derived only from `read`
+receipts; it does not mean online presence or last-active state.
+
 ## Common Commands
 
 ```bash

@@ -307,6 +307,130 @@ print(json.dumps({
   );
 });
 
+test("list_messages returns reactions and read receipts as structured data", () => {
+  const mcpServerDir = path.join(
+    pluginRoot,
+    "vendor",
+    "lharries-whatsapp-mcp",
+    "whatsapp-mcp-server",
+  );
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "whatsapp-mcp-reactions-test-"));
+  const tempDbPath = path.join(tempDir, "messages.db");
+  const pythonScript = `
+import json
+import os
+import sqlite3
+from dataclasses import asdict
+from whatsapp import list_messages
+
+db_path = os.environ["WHATSAPP_MCP_MESSAGES_DB_PATH"]
+conn = sqlite3.connect(db_path)
+cursor = conn.cursor()
+cursor.execute("CREATE TABLE chats (jid TEXT PRIMARY KEY, name TEXT, last_message_time TEXT)")
+cursor.execute("""
+CREATE TABLE messages (
+    id TEXT,
+    chat_jid TEXT NOT NULL,
+    sender TEXT NOT NULL,
+    content TEXT,
+    timestamp TEXT NOT NULL,
+    is_from_me INTEGER NOT NULL,
+    media_type TEXT,
+    reply_to_message_id TEXT,
+    reply_to_sender TEXT,
+    reply_to_content TEXT,
+    reply_to_media_type TEXT,
+    PRIMARY KEY (id, chat_jid)
+)
+""")
+cursor.execute("""
+CREATE TABLE message_reactions (
+    chat_jid TEXT NOT NULL,
+    target_message_id TEXT NOT NULL,
+    target_sender TEXT NOT NULL DEFAULT '',
+    reaction_sender TEXT NOT NULL,
+    emoji TEXT NOT NULL,
+    reaction_message_id TEXT,
+    grouping_key TEXT,
+    sender_timestamp_ms INTEGER,
+    timestamp TEXT,
+    is_from_me INTEGER,
+    PRIMARY KEY (chat_jid, target_message_id, reaction_sender)
+)
+""")
+cursor.execute("""
+CREATE TABLE message_receipts (
+    message_id TEXT NOT NULL,
+    chat_jid TEXT NOT NULL,
+    receipt_type TEXT NOT NULL,
+    receipt_sender TEXT NOT NULL,
+    message_sender TEXT NOT NULL DEFAULT '',
+    timestamp TEXT,
+    PRIMARY KEY (message_id, chat_jid, receipt_type, receipt_sender, message_sender)
+)
+""")
+cursor.execute(
+    "INSERT INTO chats (jid, name, last_message_time) VALUES (?, ?, ?)",
+    ("chat@s.whatsapp.net", "Example", "2026-04-09T12:50:14-05:00"),
+)
+cursor.execute(
+    """
+    INSERT INTO messages (
+        id, chat_jid, sender, content, timestamp, is_from_me, media_type,
+        reply_to_message_id, reply_to_sender, reply_to_content, reply_to_media_type
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """,
+    ("out-1", "chat@s.whatsapp.net", "me", "Please review this", "2026-04-09T12:15:18-05:00", 1, None, None, None, None, None),
+)
+cursor.execute(
+    """
+    INSERT INTO message_reactions (
+        chat_jid, target_message_id, target_sender, reaction_sender, emoji,
+        reaction_message_id, grouping_key, sender_timestamp_ms, timestamp, is_from_me
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """,
+    ("chat@s.whatsapp.net", "out-1", "me", "15551230001@s.whatsapp.net", "+1", "react-1", "grp", 1775747718000, "2026-04-09T12:16:18-05:00", 0),
+)
+cursor.execute(
+    """
+    INSERT INTO message_receipts (
+        message_id, chat_jid, receipt_type, receipt_sender, message_sender, timestamp
+    ) VALUES (?, ?, ?, ?, ?, ?)
+    """,
+    ("out-1", "chat@s.whatsapp.net", "read", "15551230001@s.whatsapp.net", "me", "2026-04-09T12:17:18-05:00"),
+)
+conn.commit()
+conn.close()
+
+messages = list_messages(chat_jid="chat@s.whatsapp.net", include_context=False, limit=10, page=0)
+print(json.dumps({
+    "items": [asdict(message) for message in messages],
+}, default=str))
+`;
+
+  const output = execFileSync(
+    "uv",
+    ["run", "python", "-c", pythonScript],
+    {
+      cwd: mcpServerDir,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        WHATSAPP_MCP_MESSAGES_DB_PATH: tempDbPath,
+      },
+    },
+  );
+
+  const parsed = JSON.parse(output.trim());
+  assert.equal(parsed.items[0].reactions.length, 1);
+  assert.equal(parsed.items[0].reactions[0].emoji, "+1");
+  assert.equal(parsed.items[0].reactions[0].sender, "15551230001@s.whatsapp.net");
+  assert.equal(parsed.items[0].receipts.length, 1);
+  assert.equal(parsed.items[0].receipts[0].type, "read");
+  assert.equal(parsed.items[0].seen_by.length, 1);
+  assert.equal(parsed.items[0].seen_by[0].sender, "15551230001@s.whatsapp.net");
+});
+
 test("list_messages merges phone and LID histories for one contact by default", () => {
   const mcpServerDir = path.join(
     pluginRoot,

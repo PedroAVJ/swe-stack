@@ -54,6 +54,19 @@ type ReplyMetadata struct {
 	MediaType string
 }
 
+type ReactionMetadata struct {
+	ReactionMessageID string
+	ChatJID           string
+	TargetMessageID   string
+	TargetSender      string
+	Sender            string
+	Emoji             string
+	Timestamp         time.Time
+	GroupingKey       string
+	SenderTimestampMS int64
+	IsFromMe          bool
+}
+
 // Database handler for storing message history
 type MessageStore struct {
 	db *sql.DB
@@ -224,6 +237,36 @@ func NewMessageStore() (*MessageStore, error) {
 			PRIMARY KEY (id, chat_jid),
 			FOREIGN KEY (chat_jid) REFERENCES chats(jid)
 		);
+
+		CREATE TABLE IF NOT EXISTS message_reactions (
+			chat_jid TEXT NOT NULL,
+			target_message_id TEXT NOT NULL,
+			target_sender TEXT NOT NULL DEFAULT '',
+			reaction_sender TEXT NOT NULL,
+			emoji TEXT NOT NULL,
+			reaction_message_id TEXT,
+			grouping_key TEXT,
+			sender_timestamp_ms INTEGER,
+			timestamp TIMESTAMP,
+			is_from_me BOOLEAN,
+			PRIMARY KEY (chat_jid, target_message_id, reaction_sender)
+		);
+
+		CREATE TABLE IF NOT EXISTS message_receipts (
+			message_id TEXT NOT NULL,
+			chat_jid TEXT NOT NULL,
+			receipt_type TEXT NOT NULL,
+			receipt_sender TEXT NOT NULL,
+			message_sender TEXT NOT NULL DEFAULT '',
+			timestamp TIMESTAMP,
+			PRIMARY KEY (message_id, chat_jid, receipt_type, receipt_sender, message_sender)
+		);
+
+		CREATE INDEX IF NOT EXISTS idx_message_reactions_target
+			ON message_reactions (chat_jid, target_message_id);
+
+		CREATE INDEX IF NOT EXISTS idx_message_receipts_message
+			ON message_receipts (chat_jid, message_id);
 	`)
 	if err != nil {
 		db.Close()
@@ -236,6 +279,13 @@ func NewMessageStore() (*MessageStore, error) {
 	}
 
 	return &MessageStore{db: db}, nil
+}
+
+func nullableTime(timestamp time.Time) any {
+	if timestamp.IsZero() {
+		return nil
+	}
+	return timestamp
 }
 
 func ensureMessageSchema(db *sql.DB) error {
@@ -311,6 +361,67 @@ func (store *MessageStore) StoreMessage(id, chatJID, sender, content string, tim
 		(id, chat_jid, sender, content, timestamp, is_from_me, media_type, reply_to_message_id, reply_to_sender, reply_to_content, reply_to_media_type, filename, url, media_key, file_sha256, file_enc_sha256, file_length)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		id, chatJID, sender, content, timestamp, isFromMe, mediaType, reply.MessageID, reply.Sender, reply.Content, reply.MediaType, filename, url, mediaKey, fileSHA256, fileEncSHA256, fileLength,
+	)
+	return err
+}
+
+func (store *MessageStore) StoreReaction(reaction ReactionMetadata) error {
+	if reaction.ChatJID == "" || reaction.TargetMessageID == "" || reaction.Sender == "" {
+		return nil
+	}
+
+	if reaction.Emoji == "" {
+		_, err := store.db.Exec(
+			`DELETE FROM message_reactions
+			WHERE chat_jid = ? AND target_message_id = ? AND reaction_sender = ?`,
+			reaction.ChatJID,
+			reaction.TargetMessageID,
+			reaction.Sender,
+		)
+		return err
+	}
+
+	_, err := store.db.Exec(
+		`INSERT OR REPLACE INTO message_reactions
+		(chat_jid, target_message_id, target_sender, reaction_sender, emoji, reaction_message_id, grouping_key, sender_timestamp_ms, timestamp, is_from_me)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		reaction.ChatJID,
+		reaction.TargetMessageID,
+		reaction.TargetSender,
+		reaction.Sender,
+		reaction.Emoji,
+		reaction.ReactionMessageID,
+		reaction.GroupingKey,
+		reaction.SenderTimestampMS,
+		nullableTime(reaction.Timestamp),
+		reaction.IsFromMe,
+	)
+	return err
+}
+
+func normalizeReceiptType(receiptType types.ReceiptType) string {
+	raw := string(receiptType)
+	if raw == "" {
+		return "delivered"
+	}
+	return raw
+}
+
+func (store *MessageStore) StoreReceipt(messageID, chatJID, receiptType, receiptSender, messageSender string, timestamp time.Time) error {
+	if messageID == "" || chatJID == "" || receiptType == "" || receiptSender == "" {
+		return nil
+	}
+
+	_, err := store.db.Exec(
+		`INSERT OR REPLACE INTO message_receipts
+		(message_id, chat_jid, receipt_type, receipt_sender, message_sender, timestamp)
+		VALUES (?, ?, ?, ?, ?, ?)`,
+		messageID,
+		chatJID,
+		receiptType,
+		receiptSender,
+		messageSender,
+		nullableTime(timestamp),
 	)
 	return err
 }
@@ -594,6 +705,89 @@ func messageSenderJID(sender types.JID, chat types.JID) string {
 		return chat.String()
 	}
 	return ""
+}
+
+func reactionSenderJID(evt *events.Message) string {
+	if evt == nil {
+		return ""
+	}
+	if evt.Info.IsFromMe {
+		return "me"
+	}
+	return messageSenderJID(evt.Info.Sender, evt.Info.Chat)
+}
+
+func reactionTargetChatJID(reaction *waProto.ReactionMessage, fallback types.JID) string {
+	if reaction == nil {
+		return ""
+	}
+	if key := reaction.GetKey(); key != nil {
+		if remoteJID := key.GetRemoteJID(); remoteJID != "" {
+			return remoteJID
+		}
+	}
+	return fallback.String()
+}
+
+func reactionTargetSender(reaction *waProto.ReactionMessage) string {
+	if reaction == nil {
+		return ""
+	}
+
+	key := reaction.GetKey()
+	if key == nil {
+		return ""
+	}
+	if participant := key.GetParticipant(); participant != "" {
+		return participant
+	}
+	if key.GetFromMe() {
+		return "me"
+	}
+	return ""
+}
+
+func extractReactionMetadata(client *whatsmeow.Client, evt *events.Message, messageID string, msg *waProto.Message, logger waLog.Logger) (ReactionMetadata, bool) {
+	if evt == nil || msg == nil {
+		return ReactionMetadata{}, false
+	}
+
+	reaction := msg.GetReactionMessage()
+	if reaction == nil && msg.GetEncReactionMessage() != nil && client != nil {
+		decrypted, err := client.DecryptReaction(context.Background(), evt)
+		if err != nil {
+			logger.Warnf("Failed to decrypt reaction message %s: %v", messageID, err)
+			return ReactionMetadata{}, false
+		}
+		reaction = decrypted
+	}
+	if reaction == nil {
+		return ReactionMetadata{}, false
+	}
+
+	targetMessageID := reaction.GetKey().GetID()
+	if targetMessageID == "" {
+		return ReactionMetadata{}, false
+	}
+
+	timestamp := evt.Info.Timestamp
+	senderTimestampMS := reaction.GetSenderTimestampMS()
+	if timestamp.IsZero() && senderTimestampMS > 0 {
+		timestamp = time.UnixMilli(senderTimestampMS)
+	}
+
+	return ReactionMetadata{
+		ReactionMessageID: messageID,
+		ChatJID:           reactionTargetChatJID(reaction, evt.Info.Chat),
+		TargetMessageID:   targetMessageID,
+		TargetSender:      reactionTargetSender(reaction),
+		Sender:            reactionSenderJID(evt),
+		Emoji:             reaction.GetText(),
+		Timestamp:         timestamp,
+		GroupingKey:       reaction.GetGroupingKey(),
+		SenderTimestampMS: senderTimestampMS,
+		IsFromMe:          evt.Info.IsFromMe,
+	}, true
 }
 
 func quotedMessageFromReply(reply ReplyMetadata) *waProto.Message {
@@ -896,7 +1090,7 @@ func normalizeMessageForStorage(evt *events.Message) (string, *waProto.Message) 
 	return messageID, normalized
 }
 
-func storeEventMessage(messageStore *MessageStore, evt *events.Message, logger waLog.Logger) error {
+func storeEventMessage(client *whatsmeow.Client, messageStore *MessageStore, evt *events.Message, logger waLog.Logger) error {
 	if evt == nil {
 		return nil
 	}
@@ -904,6 +1098,10 @@ func storeEventMessage(messageStore *MessageStore, evt *events.Message, logger w
 	messageID, normalizedMessage := normalizeMessageForStorage(evt)
 	if messageID == "" || normalizedMessage == nil {
 		return nil
+	}
+
+	if reaction, ok := extractReactionMetadata(client, evt, messageID, normalizedMessage, logger); ok {
+		return messageStore.StoreReaction(reaction)
 	}
 
 	content := extractTextContent(normalizedMessage)
@@ -963,7 +1161,7 @@ func handleMessage(client *whatsmeow.Client, messageStore *MessageStore, msg *ev
 		logger.Warnf("Failed to store chat: %v", err)
 	}
 
-	err = storeEventMessage(messageStore, msg, logger)
+	err = storeEventMessage(client, messageStore, msg, logger)
 	if err != nil {
 		logger.Warnf("Failed to store message: %v", err)
 	} else {
@@ -983,6 +1181,26 @@ func handleMessage(client *whatsmeow.Client, messageStore *MessageStore, msg *ev
 			fmt.Printf("[%s] %s %s: [%s: %s] %s\n", timestamp, direction, sender, mediaType, filename, content)
 		} else if content != "" {
 			fmt.Printf("[%s] %s %s: %s\n", timestamp, direction, sender, content)
+		}
+	}
+}
+
+func handleReceipt(messageStore *MessageStore, receipt *events.Receipt, logger waLog.Logger) {
+	if receipt == nil {
+		return
+	}
+
+	chatJID := receipt.Chat.String()
+	receiptSender := receipt.Sender.String()
+	if receiptSender == "" {
+		receiptSender = chatJID
+	}
+	messageSender := receipt.MessageSender.String()
+	receiptType := normalizeReceiptType(receipt.Type)
+
+	for _, messageID := range receipt.MessageIDs {
+		if err := messageStore.StoreReceipt(string(messageID), chatJID, receiptType, receiptSender, messageSender, receipt.Timestamp); err != nil {
+			logger.Warnf("Failed to store receipt for message %s: %v", messageID, err)
 		}
 	}
 }
@@ -1394,6 +1612,9 @@ func main() {
 			// Process regular messages
 			handleMessage(client, messageStore, v, logger)
 
+		case *events.Receipt:
+			handleReceipt(messageStore, v, logger)
+
 		case *events.HistorySync:
 			// Process history sync events
 			handleHistorySync(client, messageStore, v, logger)
@@ -1651,7 +1872,7 @@ func handleHistorySync(client *whatsmeow.Client, messageStore *MessageStore, his
 					continue
 				}
 
-				err = storeEventMessage(messageStore, parsedMessage, logger)
+				err = storeEventMessage(client, messageStore, parsedMessage, logger)
 				if err != nil {
 					logger.Warnf("Failed to store history message: %v", err)
 				} else {

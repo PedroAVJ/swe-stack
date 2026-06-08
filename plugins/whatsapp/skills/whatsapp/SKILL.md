@@ -56,6 +56,10 @@ whatsapp --json media transcribe MESSAGE_ID "CHAT_JID" --language es
 whatsapp --json media transcripts show MESSAGE_ID --chat-jid "CHAT_JID"
 ```
 
+Message JSON may include `reactions`, `receipts`, and `seen_by` when the bridge
+has observed reaction or read-receipt events. Treat `seen_by` as read-receipt
+data only; it is not last-active or online-presence data.
+
 ## Drafts And Sends
 
 Drafts are local review artifacts. They do not create WhatsApp's native green Draft label.
