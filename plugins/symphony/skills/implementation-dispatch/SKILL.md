@@ -48,6 +48,14 @@ Use the available thread tool schema. Do not invent raw thread directives. If
 thread tools are unavailable, produce the exact handoff prompt and say dispatch
 could not be completed from this environment.
 
+When running inside Claude Code, dispatch with the equivalent surface instead:
+
+- a fresh background session via the session-management tools when available;
+- otherwise a background general-purpose agent, with worktree isolation when
+  the repo could conflict with parallel work;
+- if neither is available, produce the exact handoff prompt and say dispatch
+  could not be completed from this environment.
+
 ## Implementation Prompt Shape
 
 Send the new thread a concise prompt with:

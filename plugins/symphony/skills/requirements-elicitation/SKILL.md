@@ -50,6 +50,24 @@ Extract only action-shaped items:
 Prefer one independently reviewable work packet at a time. Split only when two
 outcomes can be implemented and reviewed separately.
 
+## Ordering
+
+When one source yields multiple candidate issues, propose them in dependency
+order — foundations first, consumers last — not in the chronological order
+they came up in the source. Meetings tend to discuss problems top-down;
+implementation goes bottom-up. State the dependency rationale so Pedro can see
+why the order differs from the conversation. When an explicit stakeholder
+"start here" signal conflicts with dependency order, surface the conflict
+instead of silently picking one.
+
+## Plain Language First
+
+Phrase each requirement as what the user or system can do after the issue is
+done, before any technical scope detail. Pedro should be able to approve the
+packet without decoding implementation vocabulary. When a packet bundles
+foundation work with a proving consumer (for example "store the token and make
+one verified call"), say why the bundle exists and offer the split.
+
 ## Linear Rules
 
 - If Pedro only asks what something means, what is missing, or whether it is

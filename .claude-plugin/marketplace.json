@@ -61,6 +61,13 @@
       "category": "productivity",
       "source": "./plugins/android-phone",
       "homepage": "https://github.com/PedroAVJ/swe-stack/tree/main/plugins/android-phone"
+    },
+    {
+      "name": "symphony",
+      "description": "Symphony workflow protocols for Pedro's explicit lifecycle loops: evidence intake, requirements elicitation, implementation dispatch, Linear hygiene.",
+      "category": "productivity",
+      "source": "./plugins/symphony",
+      "homepage": "https://github.com/PedroAVJ/swe-stack/tree/main/plugins/symphony"
     }
   ]
 }

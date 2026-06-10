@@ -1,0 +1,19 @@
+{
+  "name": "symphony",
+  "version": "0.2.0",
+  "description": "Use Symphony workflow protocols from Claude Code for Pedro's explicit lifecycle loops.",
+  "author": {
+    "name": "PedroAVJ",
+    "url": "https://github.com/PedroAVJ"
+  },
+  "homepage": "https://github.com/PedroAVJ/swe-stack/tree/main/plugins/symphony",
+  "repository": "https://github.com/PedroAVJ/swe-stack",
+  "license": "MIT",
+  "keywords": [
+    "workflow",
+    "orchestration",
+    "linear",
+    "requirements",
+    "evidence"
+  ]
+}
