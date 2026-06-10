@@ -25,8 +25,13 @@ Install into local agents with the skills CLI:
 
 ```bash
 npx skills add PedroAVJ/swe-stack --list
-npx skills add PedroAVJ/swe-stack --skill <name> -a claude-code -a codex
+npx skills add PedroAVJ/swe-stack --skill <name> -a claude-code -a codex -g -y
 ```
+
+Always install by explicit `--skill` name. Do not use `-s '*'` / `--all` on
+this repo: the CLI discovers every SKILL.md in the tree, including
+plugin-internal skills under `plugins/*/skills/`, which are delivered via the
+plugin marketplaces and must not be double-installed as standalone skills.
 
 Workflow: edit skills here (upstream) first, push, then sync local installs —
 see `.agents/skills/swe-stack-release` for the full release procedure,
