@@ -36,6 +36,8 @@ yes or no without reading chat prose.
 - Distinctive type pairing; skip Inter, Roboto, Arial, and generic system
   stacks. Commit to an aesthetic direction; avoid the generic docs-page or
   centered-card-on-white look.
+- No house style: decide a fresh design system per explainer (palette, type,
+  layout language). Do not carry over the previous artifact's design system.
 - Readable on Pedro's iPhone and MacBook: mobile-first CSS, no fixed-width
   content, no horizontal scroll.
 - Save to `/tmp/<issue-slug>-explainer.html` and open it.

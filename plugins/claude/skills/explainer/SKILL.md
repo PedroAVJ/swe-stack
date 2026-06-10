@@ -43,10 +43,11 @@ Every explainer must:
    - For any "inverted" section (dark slab with light text used as a callout — code panels, headers, marquees), introduce `--invert-bg` and `--invert-fg` vars so those sections stay dark-with-light-text in **both** modes. Otherwise they flash bright white in dark mode and the page looks broken.
    - Variabilize grain/noise color AND blend mode. Light mode uses `mix-blend-mode: multiply`; dark mode uses `screen`. Same pattern for vignettes (opacity differs).
    - Dashed/soft borders need a `--rule-soft` (rgba) variant, not a hardcoded `rgba(26,20,16,...)`. Hardcoded ink colors vanish into the dark background.
-   - Accent colors usually need to be **lifted and slightly desaturated** in dark mode. Vermilion on cream reads confident; the same vermilion on near-black reads alarming. Shift toward coral.
+   - Accent colors usually need to be **lifted and slightly desaturated** in dark mode. A saturated accent that reads confident on a light background reads alarming on near-black; shift it lighter and softer.
    - **Never use inline `style="color: ..."` attributes.** They can't be overridden by dark-mode CSS without `!important`. Use classes.
 
 5. **Aesthetic guardrails** (in addition to Claude's direction):
+   - **There is no house style.** Decide a fresh design system per explainer — palette, type pairing, layout language — chosen for the topic, not inherited from previous explainers. Warm-paper editorial with a serif display is one direction among many, not the default; if the last explainer looked like that, go somewhere else.
    - Skip Inter, Roboto, Arial, generic system stacks. Pair a distinctive display face with a refined body face.
    - Avoid the purple-gradient-on-white default. If the design direction calls for accent colors, commit.
    - Asymmetry, generous negative space OR controlled density. Avoid the centered-card-on-white look.
@@ -88,9 +89,9 @@ Every explainer must:
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #...;        /* warm near-black, not pure black */
+    --paper: #...;        /* near-black tinted to match the palette, not pure black */
     --paper-2: #...;      /* slightly raised dark */
-    --ink: #...;          /* warm cream, not pure white */
+    --ink: #...;          /* light ink tinted to match the palette, not pure white */
     --ink-soft: #...;
     --muted: #...;
     --rule: #...;
