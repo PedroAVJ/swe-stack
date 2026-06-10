@@ -106,7 +106,13 @@ disposition.
 
 ## Output
 
-For elicitation-only turns, end with a compact result:
+When Pedro asks which issue to work on next or for a packet proposal he can
+green-light, run the elicitation and coverage work silently and present ONE
+packet through the `issue-explainer` lane (a standalone HTML decision
+artifact) instead of a multi-issue list in chat. Keep chat narration to a few
+lines. Surface the full candidate list only when Pedro asks for it.
+
+For other elicitation-only turns, end with a compact result:
 
 ```markdown
 Elicitation result:
