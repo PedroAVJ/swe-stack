@@ -33,10 +33,10 @@ this repo: the CLI discovers every SKILL.md in the tree, including
 plugin-internal skills under `plugins/*/skills/`, which are delivered via the
 plugin marketplaces and must not be double-installed as standalone skills.
 
-Workflow: edit skills here (upstream) first, push, then sync local installs —
-see `.agents/skills/swe-stack-release` for the full release procedure,
-including the Claude Code symlink bridge (Claude does not read
-`~/.agents/skills`; each skill needs `ln -sfn ~/.agents/skills/<name>
-~/.claude/skills/<name>`). Local skill directories are install targets, not
-sources of truth. OpenAI curated/system skills and third-party skills are
-never vendored into this repo.
+Workflow: edit skills here (upstream) first, push, then `npx skills update
+-g` locally — see `.agents/skills/swe-stack-release` for the full release
+procedure. The skills CLI keeps the canonical copy in `~/.agents/skills/`
+and symlinks `~/.claude/skills/` automatically (Claude Code does not read
+the agents directory itself). Local skill directories are CLI-managed
+install targets, not sources of truth. OpenAI curated/system skills and
+third-party skills are never vendored into this repo.

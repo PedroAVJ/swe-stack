@@ -169,37 +169,40 @@ Pedro-authored standalone skills live in `skills/<name>/` at the repo root
 (see `skills/README.md`). They are not plugins: no manifests, no marketplace
 entry.
 
+Local skill installs are managed by the skills CLI (`npx skills`,
+vercel-labs/skills). Its default layout: one canonical copy in
+`~/.agents/skills/` (read natively by Codex and most agents) plus symlinks
+into `~/.claude/skills/` for Claude Code. The lockfile at
+`~/.agents/.skill-lock.json` records each skill's source repo. Do not place
+or edit files in these directories by hand.
+
 Release flow:
 
 1. Edit or add the skill under `skills/<name>/` upstream first.
 2. Commit and push to `main` as above.
-3. Sync local installs. On Pedro's machine the canonical local skill home is
-   `~/.agents/skills/` (the Agent Skills standard directory, read natively by
-   Codex and most agents):
+3. Sync local installs through the CLI:
 
 ```bash
-rsync -a --delete ~/Developer/swe-stack/skills/<name>/ ~/.agents/skills/<name>/
+npx skills update -g                 # refresh all tracked skills from their sources
+npx skills add PedroAVJ/swe-stack --skill <name> -a codex -a claude-code -g -y   # first install of a new skill
 ```
 
-   On other machines, or for per-agent targeting, use the skills CLI:
-
-```bash
-npx skills add PedroAVJ/swe-stack --skill <name> -a claude-code -a codex -y
-```
+Always install by explicit `--skill` name. Never use `-s '*'` / `--all`
+against this repo: the CLI discovers plugin-internal SKILL.md folders under
+`plugins/*/skills/` and would double-install them as standalone skills.
 
 ## Claude Code Bridge
 
 Claude Code does not read `~/.agents/skills/` (open request
 anthropics/claude-code#31005; verified empirically 2026-06-10 with probe
-skills). Each skill needs a per-skill symlink — never symlink the whole
-directory (Claude writes `.system/` files into its skills dir):
+skills). The skills CLI bridges this automatically by symlinking each
+installed skill into `~/.claude/skills/`. Manual fallback, only for a skill
+the CLI does not manage — per-skill symlink, never the whole directory
+(Claude writes `.system/` files into its skills dir):
 
 ```bash
 ln -sfn ~/.agents/skills/<name> ~/.claude/skills/<name>
 ```
-
-The real files stay in `~/.agents/skills/`; the symlink only makes them
-visible to Claude. New skill → new symlink.
 
 ## Rules
 
