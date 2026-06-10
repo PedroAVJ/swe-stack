@@ -1,0 +1,4 @@
+interface:
+  display_name: "SQLite Cache CLI Pattern"
+  short_description: "Build CLIs with local SQLite caches"
+  default_prompt: "Use $sqlite-cache-cli-pattern to design a CLI with a local SQLite cache and sync workflow."

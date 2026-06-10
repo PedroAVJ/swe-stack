@@ -1,20 +1,29 @@
 ---
-name: swe-stack-plugin-release
-description: Release and upgrade SWE Stack plugins and standalone skills across both Codex and Claude Code. Use when changing a plugin or skill in PedroAVJ/swe-stack, bumping plugin versions, publishing to the marketplace, or verifying that Codex and Claude installed caches both see the same version.
+name: swe-stack-release
+description: Release and upgrade SWE Stack plugins and standalone skills across both Codex and Claude Code. Use when changing a plugin or skill in PedroAVJ/swe-stack, bumping plugin versions, publishing to the marketplace, syncing local skill installs, or verifying that Codex and Claude both see the same version.
 ---
 
-# SWE Stack Plugin Release
+# SWE Stack Release
 
-Use this skill when a SWE Stack plugin changes and needs to be available in
-both Codex and Claude Code.
+Use this skill when a SWE Stack plugin or standalone skill changes and needs
+to be available in both Codex and Claude Code. The repo is the source of
+truth for both content types: edit upstream first, push, then upgrade local
+installs.
 
 ## Model
 
-SWE Stack uses one source directory per plugin and client-specific manifests:
+SWE Stack hosts two content types:
 
-- Shared plugin source: `plugins/<plugin>/`
-- Codex manifest: `plugins/<plugin>/.codex-plugin/plugin.json`
-- Claude manifest: `plugins/<plugin>/.claude-plugin/plugin.json`
+- **Plugins**: one shared source directory per plugin with client-specific
+  manifests.
+  - Shared plugin source: `plugins/<plugin>/`
+  - Codex manifest: `plugins/<plugin>/.codex-plugin/plugin.json`
+  - Claude manifest: `plugins/<plugin>/.claude-plugin/plugin.json`
+  - A plugin is codex-only or Claude-only when only one manifest exists;
+    dual when both do.
+- **Standalone skills**: `skills/<name>/` at the repo root (see
+  `skills/README.md`). No manifests, no marketplace entry. Per-agent
+  targeting happens at install time, not in the repo.
 
 Do not fork the implementation just because both clients use the plugin. Add a
 Claude-specific source path only when the runtime behavior truly differs. Most
@@ -164,16 +173,43 @@ Release flow:
 
 1. Edit or add the skill under `skills/<name>/` upstream first.
 2. Commit and push to `main` as above.
-3. Upgrade local installs per target agent:
+3. Sync local installs. On Pedro's machine the canonical local skill home is
+   `~/.agents/skills/` (the Agent Skills standard directory, read natively by
+   Codex and most agents):
+
+```bash
+rsync -a --delete ~/Developer/swe-stack/skills/<name>/ ~/.agents/skills/<name>/
+```
+
+   On other machines, or for per-agent targeting, use the skills CLI:
 
 ```bash
 npx skills add PedroAVJ/swe-stack --skill <name> -a claude-code -a codex -y
 ```
 
-Use `-a` to control which agents receive the skill; some skills are
-intentionally Codex-only or Claude-only. Local `~/.claude/skills` and
-`~/.codex/skills` are install targets, not sources of truth. Never vendor
-OpenAI curated/system skills into the repo.
+## Claude Code Bridge
+
+Claude Code does not read `~/.agents/skills/` (open request
+anthropics/claude-code#31005; verified empirically 2026-06-10 with probe
+skills). Each skill needs a per-skill symlink — never symlink the whole
+directory (Claude writes `.system/` files into its skills dir):
+
+```bash
+ln -sfn ~/.agents/skills/<name> ~/.claude/skills/<name>
+```
+
+The real files stay in `~/.agents/skills/`; the symlink only makes them
+visible to Claude. New skill → new symlink.
+
+## Rules
+
+- Local `~/.agents/skills`, `~/.claude/skills`, and `~/.codex/skills` are
+  install targets, not sources of truth.
+- Never vendor OpenAI curated/system skills or other third-party skills
+  (check `author` fields and `~/.agents/.skill-lock.json` provenance) into
+  the repo.
+- The repo is public: scrub personal names, client references, and secrets
+  from skill examples before pushing.
 
 ## Closeout
 
