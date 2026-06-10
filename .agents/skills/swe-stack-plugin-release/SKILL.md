@@ -1,6 +1,6 @@
 ---
 name: swe-stack-plugin-release
-description: Release and upgrade SWE Stack plugins across both Codex and Claude Code. Use when changing a plugin in PedroAVJ/swe-stack, bumping plugin versions, publishing to the marketplace, or verifying that Codex and Claude installed caches both see the same plugin version.
+description: Release and upgrade SWE Stack plugins and standalone skills across both Codex and Claude Code. Use when changing a plugin or skill in PedroAVJ/swe-stack, bumping plugin versions, publishing to the marketplace, or verifying that Codex and Claude installed caches both see the same version.
 ---
 
 # SWE Stack Plugin Release
@@ -153,6 +153,27 @@ If Claude's marketplace checkout reports stale `origin/main`, refresh it:
 git -C ~/.claude/plugins/marketplaces/swe-stack fetch origin main
 git -C ~/.claude/plugins/marketplaces/swe-stack status --short --branch
 ```
+
+## Standalone Skills Release
+
+Pedro-authored standalone skills live in `skills/<name>/` at the repo root
+(see `skills/README.md`). They are not plugins: no manifests, no marketplace
+entry.
+
+Release flow:
+
+1. Edit or add the skill under `skills/<name>/` upstream first.
+2. Commit and push to `main` as above.
+3. Upgrade local installs per target agent:
+
+```bash
+npx skills add PedroAVJ/swe-stack --skill <name> -a claude-code -a codex -y
+```
+
+Use `-a` to control which agents receive the skill; some skills are
+intentionally Codex-only or Claude-only. Local `~/.claude/skills` and
+`~/.codex/skills` are install targets, not sources of truth. Never vendor
+OpenAI curated/system skills into the repo.
 
 ## Closeout
 
