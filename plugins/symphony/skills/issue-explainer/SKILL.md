@@ -9,6 +9,9 @@ Turn the winning packet from requirements elicitation into a single decision
 artifact: one HTML page that explains one issue well enough for Pedro to say
 yes or no without reading chat prose.
 
+For the whole-source picture (everything a meeting demands, with status), use
+`requirements-map` instead; this skill is the zoom-in on one packet.
+
 ## Contract
 
 - **One issue per page.** Never render a multi-issue dump. If elicitation

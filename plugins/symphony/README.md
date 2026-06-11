@@ -44,6 +44,7 @@ HTML, a deliberately scoped intake audit, or a status summary.
 - `symphony`
 - `evidence-intake`
 - `requirements-elicitation`
+- `requirements-map`
 - `issue-explainer`
 - `implementation-dispatch`
 - `linear-issue-writer` (compatibility/internal issue-body rules)
