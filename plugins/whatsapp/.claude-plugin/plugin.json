@@ -1,6 +1,6 @@
 {
   "name": "whatsapp",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Work with WhatsApp chats, message context, media, and reviewable drafts.",
   "author": {
     "name": "PedroAVJ",
@@ -9,6 +9,12 @@
   "homepage": "https://github.com/PedroAVJ/swe-stack/tree/main/plugins/whatsapp",
   "repository": "https://github.com/PedroAVJ/swe-stack",
   "license": "MIT",
-  "keywords": ["whatsapp", "messages", "chat", "media", "drafts"],
+  "keywords": [
+    "whatsapp",
+    "messages",
+    "chat",
+    "media",
+    "drafts"
+  ],
   "skills": "./skills/"
 }

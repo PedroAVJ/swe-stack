@@ -855,7 +855,7 @@ func applyReplyContext(msg *waProto.Message, contextInfo *waProto.ContextInfo) {
 }
 
 // Function to send a WhatsApp message
-func sendWhatsAppMessage(client *whatsmeow.Client, recipient string, message string, mediaPath string, reply ReplyMetadata) (bool, string) {
+func sendWhatsAppMessage(client *whatsmeow.Client, messageStore *MessageStore, recipient string, message string, mediaPath string, reply ReplyMetadata) (bool, string) {
 	if !client.IsConnected() {
 		return false, "Not connected to WhatsApp"
 	}
@@ -1023,13 +1023,44 @@ func sendWhatsAppMessage(client *whatsmeow.Client, recipient string, message str
 	applyReplyContext(msg, replyContext)
 
 	// Send message
-	_, err = client.SendMessage(context.Background(), recipientJID, msg)
+	resp, err := client.SendMessage(context.Background(), recipientJID, msg)
 
 	if err != nil {
 		return false, fmt.Sprintf("Error sending message: %v", err)
 	}
 
+	sender := ""
+	if client.Store.ID != nil {
+		sender = client.Store.ID.ToNonAD().String()
+	}
+	if err := storeSentMessage(messageStore, sender, recipientJID, resp.ID, resp.Timestamp, msg, reply); err != nil {
+		fmt.Printf("Failed to store sent message %s: %v\n", resp.ID, err)
+	}
+
 	return true, fmt.Sprintf("Message sent to %s", recipient)
+}
+
+// Persist a message this bridge just sent. whatsmeow emits no Message event
+// for the client's own sends, so without this explicit insert outbound bridge
+// messages never reach the local store.
+func storeSentMessage(store *MessageStore, sender string, chat types.JID, messageID string, timestamp time.Time, msg *waProto.Message, reply ReplyMetadata) error {
+	if store == nil || messageID == "" || msg == nil {
+		return nil
+	}
+
+	chatJID := chat.String()
+	name := chat.User
+	var existingName string
+	if err := store.db.QueryRow("SELECT name FROM chats WHERE jid = ?", chatJID).Scan(&existingName); err == nil && existingName != "" {
+		name = existingName
+	}
+	if err := store.StoreChat(chatJID, name, timestamp); err != nil {
+		return err
+	}
+
+	content := extractTextContent(msg)
+	mediaType, filename, url, mediaKey, fileSHA256, fileEncSHA256, fileLength := extractMediaInfo(msg, messageID)
+	return store.StoreMessage(messageID, chatJID, sender, content, timestamp, true, mediaType, reply, filename, url, mediaKey, fileSHA256, fileEncSHA256, fileLength)
 }
 
 // Extract media info from a message
@@ -1475,7 +1506,7 @@ func startRESTServer(client *whatsmeow.Client, messageStore *MessageStore, port 
 			Content:   req.ReplyToContent,
 			MediaType: req.ReplyToMediaType,
 		}
-		success, message := sendWhatsAppMessage(client, req.Recipient, req.Message, req.MediaPath, reply)
+		success, message := sendWhatsAppMessage(client, messageStore, req.Recipient, req.Message, req.MediaPath, reply)
 		fmt.Println("Message sent", success, message)
 		// Set response headers
 		w.Header().Set("Content-Type", "application/json")

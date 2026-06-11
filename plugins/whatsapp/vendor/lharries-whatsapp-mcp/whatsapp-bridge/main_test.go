@@ -435,3 +435,41 @@ func TestNormalizeMessageForStorageLeavesRegularMessagesUntouched(t *testing.T) 
 		t.Fatalf("normalizeMessageForStorage() changed a regular message payload unexpectedly")
 	}
 }
+
+func TestStoreSentMessagePersistsOutboundText(t *testing.T) {
+	t.Setenv("WHATSAPP_MCP_STORE_DIR", t.TempDir())
+
+	store, err := NewMessageStore()
+	if err != nil {
+		t.Fatalf("NewMessageStore() error = %v", err)
+	}
+	defer store.Close()
+
+	chat := types.JID{User: "99900123456789", Server: "lid"}
+	timestamp := time.Unix(1_700_000_000, 0)
+	msg := &waProto.Message{Conversation: proto.String("outbound text")}
+
+	if err := storeSentMessage(store, "15551230001@s.whatsapp.net", chat, "SENT-ID", timestamp, msg, ReplyMetadata{}); err != nil {
+		t.Fatalf("storeSentMessage() error = %v", err)
+	}
+
+	var content, sender string
+	var isFromMe bool
+	if err := store.db.QueryRow(
+		"SELECT content, sender, is_from_me FROM messages WHERE id = ? AND chat_jid = ?",
+		"SENT-ID", chat.String(),
+	).Scan(&content, &sender, &isFromMe); err != nil {
+		t.Fatalf("SELECT sent message error = %v", err)
+	}
+	if content != "outbound text" || sender != "15551230001@s.whatsapp.net" || !isFromMe {
+		t.Fatalf("sent message row = (%q, %q, %v), want (outbound text, 15551230001@s.whatsapp.net, true)", content, sender, isFromMe)
+	}
+
+	var chatCount int
+	if err := store.db.QueryRow("SELECT COUNT(*) FROM chats WHERE jid = ?", chat.String()).Scan(&chatCount); err != nil {
+		t.Fatalf("SELECT chat error = %v", err)
+	}
+	if chatCount != 1 {
+		t.Fatalf("chat rows = %d, want 1 (own sends must also upsert the chat)", chatCount)
+	}
+}
