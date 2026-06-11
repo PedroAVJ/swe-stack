@@ -5,10 +5,24 @@ description: "Render a WHOLE-SOURCE requirements map — everything a meeting, c
 
 # Symphony Requirements Map
 
-One source in, one page out: the complete picture of what that source demands,
-with current status. This is Pedro's re-orientation document — he reads it when
+One source in, one picture out: the complete view of what that source demands,
+with current status. This is Pedro's re-orientation surface — he uses it when
 the meeting has faded from working memory and he needs the whole board back in
 his head in under two minutes.
+
+## Mode: conversational by default
+
+When Pedro is in a dialogue ("what are the things to do, roughly?"), do NOT
+produce one monolithic page. Answer his current question with a short reply
+plus one small inline visual (a rough-shapes card row, a chain diagram), then
+let him steer — he zooms with follow-up questions, one per turn. Map his own
+vocabulary to the real shapes ("the robot", "the knobs") and keep using his
+words. Mid-conversation visuals are disposable; correctness of status labels
+still binds (see verification rules below). Produce the full one-page map only
+when he explicitly asks for the whole thing at once.
+
+For work that was already DONE (evaluating built features), use the sibling
+`delivery-map` skill instead — same philosophy, pointed backwards.
 
 ## Optimize for intake, not completeness theater
 
