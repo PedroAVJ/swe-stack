@@ -43,10 +43,15 @@ only if he asks for everything at once.
 
 - Record with slowed automated browsing (e.g. Playwright `slowMo` +
   `recordVideo`) against the real app; name clips by flow.
-- Deliver inline in the conversation. When the inline surface cannot play
-  local files, publish clips to durable URLs first (the `publish-file` lane)
-  or hand over small HTML files that the inline preview panel renders. Never
-  auto-open an external browser unless Pedro asks.
+- **Video pipeline (settled empirically, 2026-06-12):** convert the recording
+  to H.264 MP4 (`ffmpeg -c:v libx264 -pix_fmt yuv420p -movflags +faststart`),
+  publish it with the `publish-file` lane, and deliver the URL as a plain
+  markdown link in chat. Do NOT wrap clips in HTML for the inline preview
+  panel: its webview chokes on local/webm/data-URI video and cannot
+  fullscreen — Pedro clicks the link and watches in his real browser instead.
+- HTML files in the preview panel are for text-and-stills documents only;
+  in-thread widgets for diagrams, tables, and counters. Never auto-open an
+  external browser unless Pedro asks.
 - Answers and verdicts go in the turn's final message — text between tool
   calls does not render for Pedro.
 
