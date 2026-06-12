@@ -17,10 +17,14 @@ only if he asks for everything at once.
 1. **What changed for me?** Observable product terms, zero prior knowledge:
    which screen, which section, which new buttons. Never lean on branch names,
    commits, or issue IDs as content.
-2. **Show me it working.** Show, don't describe. The unit of evidence is a
-   short slowed screen recording (30–60s) of the real app doing the real flow,
-   with a one-line caption per clip; stills for static states. Recordings are
-   the right medium for judging UI behavior; prose is not.
+2. **Show me it working.** Show, don't describe — and for interactive UI the
+   answer is usually a TEST DRIVE, not footage: start the dev servers against
+   the dev database, hand Pedro the URL, and orient him in two sentences
+   (where the new things live, what state the data is in). UI is fundamentally
+   dynamic; recordings flatten it. Reserve short slowed recordings (30–60s,
+   honest captions) for flows he cannot drive himself (missing credential,
+   destructive path) or when he explicitly asks for a clip; stills for static
+   states.
 3. **What's actually verified?** Three honest labels, never blurred:
    *machine-tested* (suites/automation passed), *live-verified* (exercised
    against the real external system), *unverified*. Never attribute an
