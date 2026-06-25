@@ -14,6 +14,7 @@ DEFAULT_TEMPLATES = {
     "implement": PLUGIN_ROOT / "templates" / "frontend-implementation.md",
 }
 DEFAULT_LOG_ROOT = pathlib.Path.home() / ".local" / "share" / "claude-plugin" / "design-logs"
+DEFAULT_MODEL = "claude-opus-4-8"
 
 
 def extract_text(value):
@@ -69,7 +70,7 @@ def main():
     parser.add_argument("--prompt-file", default="", help="Base prompt/template file.")
     parser.add_argument("--prompt", default="", help="Extra prompt appended after the prompt file.")
     parser.add_argument("--log-root", default=str(DEFAULT_LOG_ROOT), help="Directory for raw stream and debug logs.")
-    parser.add_argument("--model", default="", help="Optional Claude model alias/name.")
+    parser.add_argument("--model", default=DEFAULT_MODEL, help=f"Claude model alias/name. Defaults to {DEFAULT_MODEL}.")
     parser.add_argument("--effort", default="medium", help="Claude effort level.")
     parser.add_argument("--allow-edits", action="store_true", help="Allow edit/write tools. Default is read-only handoff.")
     args = parser.parse_args()

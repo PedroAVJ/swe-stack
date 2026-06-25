@@ -15,6 +15,10 @@ This project is unofficial and is not affiliated with Anthropic.
 - Treat user feedback on the output as specification discovery. Update the prompt/workflow so the same failure is less likely next time.
 - Codex remains responsible for checking diffs, fixing breakage, verifying in-browser behavior, and deciding what is ready.
 
+## Model selection
+
+The wrapper passes `--model claude-opus-4-8` by default so Claude runs use Opus 4.8 unless a specific model is explicitly provided with `--model`.
+
 ## Included surfaces
 
 - `skills/frontend-ui` is the mandatory workflow for app UI and frontend implementation work: Claude edits the UI directly, while Codex stewards and verifies.

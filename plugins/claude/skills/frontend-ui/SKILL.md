@@ -26,10 +26,12 @@ If the task changes application UI, visual behavior, layout, styling, interactio
 python3 /path/to/plugins/claude/scripts/run_design_pass.py \
   --repo /path/to/repo \
   --mode implement \
+  --model claude-opus-4-8 \
   --prompt "Implement the requested UI change. Keep scope narrow. Match the existing design system. Do not make unrelated changes."
 ```
 
 Resolve `/path/to/plugins/claude` to the directory containing this skill, then use that plugin's `scripts/run_design_pass.py`.
+The wrapper defaults to `claude-opus-4-8`, but the command should keep the model explicit when invoking this workflow.
 
 3. Inspect Claude's raw log and resulting diff.
 4. Clean up only what is necessary: broken code, scope drift, formatting, or integration mismatches.
