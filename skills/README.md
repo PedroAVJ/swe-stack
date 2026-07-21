@@ -12,7 +12,6 @@ repo.
 | Skill | What it does |
 | --- | --- |
 | `agent-ledger` | Agent-owned operational state in a local SQLite ledger (IOUs, follow-ups, agent todos) |
-| `agents-md-index` | Keep AGENTS.md an index, not a manual; migration walkthrough for bloated files |
 | `anger-defusal` | Context-gap check before responding to user frustration; verdict-first defusal shape |
 | `bdd-test` | Minimal BDD contracts (Given/When/Then Markdown) paired with Playwright automation |
 | `codex-app-hacking` | Inspect/patch/restore the local macOS Codex desktop app bundle (ASAR, codesigning) |
