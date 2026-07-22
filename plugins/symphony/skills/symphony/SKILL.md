@@ -60,6 +60,10 @@ Use the narrower Symphony skills when the request names a lane:
 - `elicitation`: capture elicitation sessions — meetings, calls, voice memos,
   transcripts, Drive/Gmail artifacts, and local media — as durable evidence
   before extraction.
+- `analysis`: classify elicited requirements with the SWEBOK vocabulary
+  (functional/nonfunctional, derivation, product/process, scope) and route
+  each to Linear packet, repo constraint doc, or agent instructions;
+  in-thread only, no writes. Partial — classification facet only.
 - `requirements-elicitation`: extract grounded requirements into approved Linear
   work packets before implementation.
 - `implementation-dispatch`: create a separate Codex implementation thread from

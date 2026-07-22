@@ -1,0 +1,86 @@
+---
+name: analysis
+description: "Use when Pedro wants Symphony to analyze requirements: apply the SWEBOK definition of a requirement, classify elicited requirements along the kept SWEBOK dimensions, or decide where a requirement should live (Linear work packet, repo constraint doc, agent instructions). Partial skill: only the requirement definition and the classification facet are defined so far."
+---
+
+# Symphony Requirements Analysis
+
+Status: partial. This skill currently covers SWEBOK's Requirements
+Classification topic plus the underlying definition of a requirement. The
+remaining analysis topics (conceptual modeling, architectural design and
+requirements allocation, requirements negotiation, formal analysis) are not
+defined yet — do not improvise them from general knowledge; tell Pedro they
+are not covered.
+
+## Reference Vocabulary
+
+SWEBOK (Software Requirements knowledge area) is the single reference
+vocabulary for Symphony requirements work. Do not merge in other frameworks
+— Sommerville's user-vs-system altitudes, Wiegers, ISO/IEC/IEEE 29148
+well-formedness checklists — unless Pedro asks. 29148 becomes relevant only
+if a formal SRS document is ever contractually required; until then it is
+out of scope.
+
+## What Counts as a Requirement
+
+Per SWEBOK: a requirement is "a property that must be exhibited by something
+in order to solve some problem in the real world." It must be:
+
+- **Verifiable** — as an individual feature if functional, at system level
+  if nonfunctional. If you cannot state how it would be checked, it is a
+  wish, not a requirement yet — route it back as `Needs Info` instead of
+  analyzing it.
+- **Unambiguous** — stated as clearly as possible.
+- **Quantified where appropriate** — "under 2s for 95% of transactions",
+  not "fast".
+
+## Classification
+
+SWEBOK's Requirements Classification topic lists six dimensions. Symphony
+uses four. Priority and volatility/stability are deliberately dropped, not
+overlooked: both exist to ration scarce implementation effort, and with
+agent coding implementation is cheap. Do not ask Pedro for priorities or
+stability estimates, and do not record them.
+
+Classify each requirement along:
+
+1. **Functional vs nonfunctional** — behavior the system exhibits vs a
+   quality or constraint on it.
+2. **Derivation** — where it came from, which fixes where it gets
+   validated:
+   - *Imposed directly* by a stakeholder → validate with that stakeholder.
+   - *Derived* from a parent requirement → validate against the parent and
+     keep the trace; if the parent dies, the child dies.
+   - *Emergent* — a whole-system property no single component satisfies →
+     verifiable only end-to-end.
+3. **Product vs process** — does it constrain the artifact, or the activity
+   of building it? Nonfunctional product requirements are still product
+   requirements; process requirements say nothing about what the software
+   does.
+4. **Scope** — the extent to which it affects the software: narrow
+   (satisfiable by one component) vs global (cannot be allocated to a
+   discrete component; constrains architecture and every future change).
+
+## Routing
+
+Classification exists to route, not to label. Each class lands somewhere
+different:
+
+- **Functional, narrow scope** → a Linear work packet, through the
+  `requirements-elicitation` lane.
+- **Nonfunctional, global scope** → a standing constraint doc in the target
+  repo's `docs/` — a rule future issues get checked against. It may spawn a
+  one-off cleanup issue, but the issue closes and the constraint stays
+  alive.
+- **Process requirement** → agent instruction files (AGENTS.md, global
+  instructions), not Linear and not product docs.
+- **Derived** → record the pointer to its parent requirement.
+- **Emergent** → note explicitly that verification is end-to-end only.
+
+## Contract
+
+- Analysis is an in-thread classification and routing pass over already
+  captured or elicited requirements. Answer in chat.
+- No Linear writes, no product code, no repo doc writes from this skill.
+  When routing says a constraint doc or instruction-file change is needed,
+  propose it and let Pedro approve the write in the appropriate lane.
