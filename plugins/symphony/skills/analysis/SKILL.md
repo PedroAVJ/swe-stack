@@ -142,10 +142,10 @@ The forwarded task must contain:
   genuinely unallocatable), product vs process, missed requirements still
   in the sources, and conflict typing. Findings only — no rewrite.
 
-Then reconcile in-thread: adopt findings that stick, reject the rest with
-a stated reason, and present ONE final analysis. Close with a short list
-of what the pass changed and what it challenged unsuccessfully, so Pedro
-sees the disagreement instead of a silent merge.
+Then reconcile in-thread: adopt findings that stick, drop the rest, and
+present ONE final analysis. The reconciliation is silent — no changelog,
+no list of adopted or rejected findings; anything that survives the pass
+is already visible in the table itself.
 
 Skip the pass — and say so plainly — when the rescue subagent is
 unavailable or returns nothing (including when this skill runs inside
