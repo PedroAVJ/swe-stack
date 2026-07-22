@@ -1,16 +1,16 @@
 ---
 name: analysis
-description: "Use when Pedro wants Symphony to analyze requirements: apply the SWEBOK definition of a requirement, classify elicited requirements along the kept SWEBOK dimensions, or decide where a requirement should live (Linear work packet, repo constraint doc, agent instructions). Partial skill: only the requirement definition and the classification facet are defined so far."
+description: "Use when Pedro wants Symphony to analyze requirements: apply the SWEBOK definition of a requirement, classify elicited requirements along the kept SWEBOK dimensions, suggest which architecture component each requirement is allocated to, or decide where a requirement should live (Linear work packet, repo constraint doc, agent instructions). Partial skill: requirement definition, classification, and allocation are defined so far."
 ---
 
 # Symphony Requirements Analysis
 
-Status: partial. This skill currently covers SWEBOK's Requirements
-Classification topic plus the underlying definition of a requirement. The
-remaining analysis topics (conceptual modeling, architectural design and
-requirements allocation, requirements negotiation, formal analysis) are not
-defined yet — do not improvise them from general knowledge; tell Pedro they
-are not covered.
+Status: partial. This skill currently covers the SWEBOK definition of a
+requirement plus two analysis topics: Requirements Classification and
+Requirements Allocation. Conceptual modeling is deliberately dropped —
+Pedro's call, do not reintroduce it. The remaining analysis topics
+(requirements negotiation, formal analysis) are not defined yet — do not
+improvise them from general knowledge; tell Pedro they are not covered.
 
 ## Reference Vocabulary
 
@@ -76,6 +76,27 @@ different:
   instructions), not Linear and not product docs.
 - **Derived** → record the pointer to its parent requirement.
 - **Emergent** → note explicitly that verification is end-to-end only.
+
+## Allocation
+
+For each requirement, suggest which architecture component is responsible
+for satisfying it. Components are the named boxes of the target system's
+decomposition at feature-area altitude — for TradeInCode: monitoring,
+trips, customs, IntegratorAPI, Nova frontend, and so on — never
+implementation mechanisms (mutation vs EF hook vs background job is design
+inside the box, below this skill).
+
+- State the owning component per requirement; Pedro confirms.
+- Surface cross-component dependencies the allocation exposes ("monitoring
+  owns auto-close but depends on BOL status owned by trips").
+- Record any derived requirements the allocation mints per component, with
+  their parent trace — this feeds the derivation dimension.
+- A requirement that cannot be allocated to a single component is
+  global-scope by definition; route it as a standing constraint, and note
+  that emergent properties are verified through component interaction,
+  end-to-end only.
+- SWEBOK notes this is where analysis overlaps design; keep the overlap to
+  picking boxes. Do not design inside them.
 
 ## Contract
 
