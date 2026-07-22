@@ -1,20 +1,24 @@
 ---
 name: requirements-elicitation
-description: "Use when Pedro wants Symphony to turn messy stakeholder input, WhatsApp messages, meeting/email evidence, screenshots, docs, or repo context into an agreed Linear work packet before implementation. This skill talks through meaning and scope first, creates/updates Linear only after approval, and does not write product code."
+description: "Use when Pedro wants Symphony to turn messy stakeholder input, WhatsApp messages, meeting/email evidence, screenshots, docs, or repo context into Linear work packets before implementation. This skill elicits the whole source in one pass, creates all candidate issues as Linear drafts in a single batch for Pedro to review in Linear, and does not write product code."
 ---
 
 # Symphony Requirements Elicitation
 
-Use this as Symphony's canonical first lane: messy source evidence in, clear
-approved work packet out. Implementation happens later, usually through
+Use this as Symphony's canonical first lane: messy source evidence in, a batch
+of draft Linear work packets out. Pedro reviews and promotes the drafts in
+Linear; implementation happens later, usually through
 `implementation-dispatch`.
 
 ## Contract
 
 - Ground the requirement in the real source before interpreting it.
-- Talk through what the requirement means and where the boundaries are.
-- Create or update Linear only after Pedro approves the requirement or asks to
-  capture it.
+- Elicit the WHOLE source in one pass and create every actionable candidate as
+  a draft Linear issue in a single batch — no per-issue approval gate for
+  draft creation.
+- Drafts use the workspace's draft-like state (Triage or Draft if the team has
+  one, else Backlog) — never Todo. Promotion to Todo is Pedro's review
+  decision, per issue, in Linear or in chat.
 - Do not write product code, open a PR, merge, deploy, or mark work review-ready
   from this skill.
 - Do not dispatch an implementation thread until Pedro says to implement, pick
@@ -47,8 +51,9 @@ Extract only action-shaped items:
   concrete enough for near-term work.
 - `Non-actionable`: status, scheduling, thanks, jokes, or background.
 
-Prefer one independently reviewable work packet at a time. Split only when two
-outcomes can be implemented and reviewed separately.
+Each draft must stay an independently reviewable work packet — batch creation
+does not mean merged scope. Split only when two outcomes can be implemented
+and reviewed separately.
 
 ## Ordering
 
@@ -72,12 +77,14 @@ one verified call"), say why the bundle exists and offer the split.
 
 - If Pedro only asks what something means, what is missing, or whether it is
   covered, answer the question first and do not mutate Linear.
-- If Pedro approves a requirement for implementation, create/update a Todo issue
-  unless he asks for a different state.
-- If Pedro asks to capture or park something without implementation, use Backlog
-  or Needs Info as appropriate.
+- When running an elicitation pass, create all `Requirement` and `Bug`
+  candidates as draft issues in one batch. `Needs Info` items become drafts
+  too, flagged with their open question. `Deferred` and `Non-actionable`
+  items are reported in chat, not created.
+- If Pedro approves a draft for implementation, promote it to Todo unless he
+  asks for a different state.
 - If an existing issue already covers the work, update/comment on that issue
-  instead of creating a duplicate.
+  instead of creating a duplicate draft.
 - A Linear issue is a source-linked work packet, not a transcript summary or
   implementation plan.
 - Include source pointers: person/thread/document, message IDs or timestamp
@@ -106,24 +113,24 @@ disposition.
 
 ## Output
 
-When Pedro asks which issue to work on next or for a packet proposal he can
-green-light, run the elicitation and coverage work silently and present ONE
-packet through the `issue-explainer` lane (a standalone HTML decision
-artifact) instead of a multi-issue list in chat. Keep chat narration to a few
-lines. Surface the full candidate list only when Pedro asks for it.
-
-For other elicitation-only turns, end with a compact result:
+After the batch is created, end with a compact result — one line per draft,
+in dependency order, with Linear links:
 
 ```markdown
-Elicitation result:
+Elicitation result (N drafts created):
 
-- Requirement / bug: PLAIN ENGLISH WORK
-- Covered already: ISSUE_OR_REASON
-- Proposed Linear packet: TITLE, state, scope
+1. TITLE — Requirement|Bug|Needs Info — LINEAR_LINK
+...
+
+- Covered already (no draft): ISSUE_OR_REASON
+- Deferred / non-actionable: SHORT_LIST_OR_NONE
 - Open questions: QUESTION_OR_NONE
-- Recommended next step: create/update issue, dispatch implementation, or wait
 ```
 
-When Pedro approves implementation, create/update Linear first, then use
-`implementation-dispatch` in a separate step to create the fresh agent
-thread.
+When Pedro asks which issue to work on next, recommend ONE draft from the
+batch through the `issue-explainer` lane (a standalone HTML decision
+artifact) instead of re-listing everything in chat.
+
+When Pedro approves implementation of a draft, promote it in Linear first,
+then use `implementation-dispatch` in a separate step to create the fresh
+agent thread.
