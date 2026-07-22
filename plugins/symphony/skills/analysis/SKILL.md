@@ -96,8 +96,40 @@ and the prioritization methods (cost-value, pairwise comparison) — is
 deliberately dropped, Pedro's call: conflicts go to him regardless, and
 prioritization is effort-rationing. Do not apply or record either.
 
+## Codex Adversarial Pass
+
+Claude and Codex fail in opposite directions on this task: Claude's drift
+is loose labels and design decisions recorded as requirements; Codex's
+drift is dropped provenance and hedges hardened into false precision. So
+after drafting the full analysis and before presenting it, dispatch a
+critique to the `codex:codex-rescue` subagent as a single read-only task.
+
+The forwarded task must contain:
+
+- The complete draft analysis verbatim.
+- Repo paths to the source evidence (transcripts, meeting notes) so Codex
+  can ground the critique instead of reviewing prose in a vacuum.
+- An explicit "review only, read-only, make no edits" instruction.
+- The critique brief: challenge each row on requirement vs design
+  decision, verifiability (was a hedge quantified into a fake number?),
+  derivation traced to a named stakeholder, scope (global only when
+  genuinely unallocatable), product vs process, missed requirements still
+  in the sources, and conflict typing. Findings only — no rewrite.
+
+Then reconcile in-thread: adopt findings that stick, reject the rest with
+a stated reason, and present ONE final analysis. Close with a short list
+of what the pass changed and what it challenged unsuccessfully, so Pedro
+sees the disagreement instead of a silent merge.
+
+Skip the pass — and say so plainly — when the rescue subagent is
+unavailable or returns nothing (including when this skill runs inside
+Codex itself, where self-review adds nothing). Never fabricate a critique
+on Codex's behalf.
+
 ## Contract
 
 - Analysis is an in-thread classification and allocation pass over already
   captured or elicited requirements. Answer in chat.
+- The Codex adversarial pass is review-only; it inherits this skill's
+  no-write contract.
 - No Linear writes, no product code, no repo doc writes from this skill.
