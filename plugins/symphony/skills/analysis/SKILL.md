@@ -26,8 +26,7 @@ in order to solve some problem in the real world." It must be:
 
 - **Verifiable** — as an individual feature if functional, at system level
   if nonfunctional. If you cannot state how it would be checked, it is a
-  wish, not a requirement yet — flag it as `Needs Info` instead of
-  analyzing it.
+  wish, not a requirement yet.
 - **Unambiguous** — stated as clearly as possible.
 - **Quantified where appropriate** — "under 2s for 95% of transactions",
   not "fast".
