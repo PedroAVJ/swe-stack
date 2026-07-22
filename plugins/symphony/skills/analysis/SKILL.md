@@ -1,16 +1,16 @@
 ---
 name: analysis
-description: "Use when Pedro wants Symphony to analyze requirements: apply the SWEBOK definition of a requirement, classify elicited requirements along the kept SWEBOK dimensions, or suggest which architecture component each requirement is allocated to. Partial skill: requirement definition, classification, and allocation are defined so far."
+description: "Use when Pedro wants Symphony to analyze requirements: apply the SWEBOK definition of a requirement, classify elicited requirements along the kept SWEBOK dimensions, suggest which architecture component each requirement is allocated to, or surface requirement conflicts by SWEBOK's three conflict types. Partial skill: requirement definition, classification, allocation, and negotiation are defined so far."
 ---
 
 # Symphony Requirements Analysis
 
 Status: partial. This skill currently covers the SWEBOK definition of a
-requirement plus two analysis topics: Requirements Classification and
-Requirements Allocation. Conceptual modeling is deliberately dropped —
-Pedro's call, do not reintroduce it. The remaining analysis topics
-(requirements negotiation, formal analysis) are not defined yet — do not
-improvise them from general knowledge; tell Pedro they are not covered.
+requirement plus three analysis topics: Requirements Classification,
+Requirements Allocation, and Requirements Negotiation. Conceptual modeling
+is deliberately dropped — Pedro's call, do not reintroduce it. The
+remaining analysis topic (formal analysis) is not defined yet — do not
+improvise it from general knowledge; tell Pedro it is not covered.
 
 ## Reference Vocabulary
 
@@ -80,6 +80,23 @@ inside the box, below this skill).
   verified through component interaction, end-to-end only.
 - SWEBOK notes this is where analysis overlaps design; keep the overlap to
   picking boxes. Do not design inside them.
+
+## Negotiation
+
+SWEBOK names exactly three conflict types. When requirements conflict,
+identify which type it is and surface it:
+
+1. **Stakeholder vs stakeholder** — two stakeholders require mutually
+   incompatible features.
+2. **Requirements vs resources** — a requirement exceeds what is
+   available.
+3. **Functional vs nonfunctional** — a functional requirement conflicts
+   with a nonfunctional one.
+
+The rest of SWEBOK's negotiation topic — the no-unilateral-decision rule
+and the prioritization methods (cost-value, pairwise comparison) — is
+deliberately dropped, Pedro's call: conflicts go to him regardless, and
+prioritization is effort-rationing. Do not apply or record either.
 
 ## Contract
 
