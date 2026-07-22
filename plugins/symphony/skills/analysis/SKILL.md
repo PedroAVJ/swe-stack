@@ -1,6 +1,6 @@
 ---
 name: analysis
-description: "Use when Pedro wants Symphony to analyze requirements: apply the SWEBOK definition of a requirement, classify elicited requirements along the kept SWEBOK dimensions, suggest which architecture component each requirement is allocated to, or decide where a requirement should live (Linear work packet, repo constraint doc, agent instructions). Partial skill: requirement definition, classification, and allocation are defined so far."
+description: "Use when Pedro wants Symphony to analyze requirements: apply the SWEBOK definition of a requirement, classify elicited requirements along the kept SWEBOK dimensions, or suggest which architecture component each requirement is allocated to. Partial skill: requirement definition, classification, and allocation are defined so far."
 ---
 
 # Symphony Requirements Analysis
@@ -28,7 +28,7 @@ in order to solve some problem in the real world." It must be:
 
 - **Verifiable** — as an individual feature if functional, at system level
   if nonfunctional. If you cannot state how it would be checked, it is a
-  wish, not a requirement yet — route it back as `Needs Info` instead of
+  wish, not a requirement yet — flag it as `Needs Info` instead of
   analyzing it.
 - **Unambiguous** — stated as clearly as possible.
 - **Quantified where appropriate** — "under 2s for 95% of transactions",
@@ -61,22 +61,6 @@ Classify each requirement along:
    (satisfiable by one component) vs global (cannot be allocated to a
    discrete component; constrains architecture and every future change).
 
-## Routing
-
-Classification exists to route, not to label. Each class lands somewhere
-different:
-
-- **Functional, narrow scope** → a Linear work packet, through the
-  `requirements-elicitation` lane.
-- **Nonfunctional, global scope** → a standing constraint doc in the target
-  repo's `docs/` — a rule future issues get checked against. It may spawn a
-  one-off cleanup issue, but the issue closes and the constraint stays
-  alive.
-- **Process requirement** → agent instruction files (AGENTS.md, global
-  instructions), not Linear and not product docs.
-- **Derived** → record the pointer to its parent requirement.
-- **Emergent** → note explicitly that verification is end-to-end only.
-
 ## Allocation
 
 For each requirement, suggest which architecture component is responsible
@@ -92,16 +76,13 @@ inside the box, below this skill).
 - Record any derived requirements the allocation mints per component, with
   their parent trace — this feeds the derivation dimension.
 - A requirement that cannot be allocated to a single component is
-  global-scope by definition; route it as a standing constraint, and note
-  that emergent properties are verified through component interaction,
-  end-to-end only.
+  global-scope by definition; say so, and note that emergent properties are
+  verified through component interaction, end-to-end only.
 - SWEBOK notes this is where analysis overlaps design; keep the overlap to
   picking boxes. Do not design inside them.
 
 ## Contract
 
-- Analysis is an in-thread classification and routing pass over already
+- Analysis is an in-thread classification and allocation pass over already
   captured or elicited requirements. Answer in chat.
 - No Linear writes, no product code, no repo doc writes from this skill.
-  When routing says a constraint doc or instruction-file change is needed,
-  propose it and let Pedro approve the write in the appropriate lane.
