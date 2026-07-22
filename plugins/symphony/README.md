@@ -43,7 +43,6 @@ HTML, a deliberately scoped intake audit, or a status summary.
 
 - `symphony`
 - `elicitation`
-- `analysis`
 - `requirements-elicitation`
 - `requirements-map`
 - `delivery-map`
