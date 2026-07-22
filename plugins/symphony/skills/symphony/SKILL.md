@@ -60,6 +60,9 @@ Use the narrower Symphony skills when the request names a lane:
 - `elicitation`: capture elicitation sessions — meetings, calls, voice memos,
   transcripts, Drive/Gmail artifacts, and local media — as durable evidence
   before extraction.
+- `analysis`: classify and allocate captured evidence into a candidate
+  requirements table with conflicts to negotiate; in-thread only, no Linear
+  writes.
 - `requirements-elicitation`: extract grounded requirements into approved Linear
   work packets before implementation.
 - `implementation-dispatch`: create a separate Codex implementation thread from
