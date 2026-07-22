@@ -1,6 +1,6 @@
 ---
 name: analysis
-description: "Use when Pedro wants Symphony to analyze requirements: apply the SWEBOK definition of a requirement, classify elicited requirements along the kept SWEBOK dimensions, suggest which architecture component each requirement is allocated to, or surface requirement conflicts by SWEBOK's three conflict types."
+description: "Use when Pedro wants Symphony to analyze requirements: apply the SWEBOK definition of a requirement and deliver one requirements table (classified along the kept SWEBOK dimensions, with allocation-minted derived rows and a blocked-by column) plus a conflicts list typed by SWEBOK's three conflict types. Allocation runs under the hood, never as output."
 ---
 
 # Symphony Requirements Analysis
@@ -58,25 +58,38 @@ Classify each requirement along:
    (satisfiable by one component) vs global (cannot be allocated to a
    discrete component; constrains architecture and every future change).
 
+## Flow
+
+Analysis runs as a pipeline with one feedback loop:
+
+1. Classify the elicited requirements.
+2. Allocate them (under the hood — see below); this can mint new derived
+   requirements.
+3. Minted rows re-enter classification — they arrive mostly pre-labeled
+   (derived with a parent, usually functional and narrow), so this
+   converges in a pass or two.
+4. Run the conflict check last, over the complete row set. It must be
+   last: derived requirements can be the conflicting ones, and they do not
+   exist until allocation mints them.
+
 ## Allocation
 
-For each requirement, suggest which architecture component is responsible
-for satisfying it. Components are the named boxes of the target system's
-decomposition at feature-area altitude — for TradeInCode: monitoring,
-trips, customs, IntegratorAPI, Nova frontend, and so on — never
-implementation mechanisms (mutation vs EF hook vs background job is design
-inside the box, below this skill).
+Allocation runs under the hood. It is never a section of the output — its
+visible residue is rows and columns in the requirements table.
 
-- State the owning component per requirement; Pedro confirms.
-- Surface cross-component dependencies the allocation exposes ("monitoring
-  owns auto-close but depends on BOL status owned by trips").
-- Record any derived requirements the allocation mints per component, with
-  their parent trace — this feeds the derivation dimension.
-- A requirement that cannot be allocated to a single component is
-  global-scope by definition; say so, and note that emergent properties are
-  verified through component interaction, end-to-end only.
-- SWEBOK notes this is where analysis overlaps design; keep the overlap to
-  picking boxes. Do not design inside them.
+Hold each requirement against the target system's decomposition and assign
+it internally to the component responsible for satisfying it. Components
+are feature-area boxes — for TradeInCode: monitoring, trips, customs,
+IntegratorAPI, Nova frontend, and so on — never implementation mechanisms
+(mutation vs EF hook vs background job is design inside the box, below
+this skill; do not design inside the boxes).
+
+The point of the pass is to discover requirements the source does not
+contain: when a component cannot satisfy its requirement without something
+another component owns, that missing piece becomes a new derived
+requirement row, parent-traced to the requirement that minted it. A
+requirement no single component can satisfy is global-scope; that lands in
+the scope column, not in any call-out.
 
 ## Negotiation
 
@@ -94,6 +107,20 @@ The rest of SWEBOK's negotiation topic — the no-unilateral-decision rule
 and the prioritization methods (cost-value, pairwise comparison) — is
 deliberately dropped, Pedro's call: conflicts go to him regardless, and
 prioritization is effort-rationing. Do not apply or record either.
+
+## Output
+
+The deliverable is one requirements table plus a conflicts list:
+
+- Rows: every requirement — elicited and allocation-minted alike, on the
+  same table.
+- Columns: the four classification dimensions (derivation carries the
+  parent pointer) plus a blocked-by column — which rows must exist first.
+  The blocked-by column is the artifact allocation leaves behind; it
+  carries build order and maps onto Linear blocking relations at
+  specification time.
+- Conflicts: a short list after the table, each entry naming the two rows
+  involved and which of the three conflict types it is.
 
 ## Codex Adversarial Pass
 

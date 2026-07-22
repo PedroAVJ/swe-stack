@@ -61,8 +61,9 @@ Use the narrower Symphony skills when the request names a lane:
   transcripts, Drive/Gmail artifacts, and local media — as durable evidence
   before extraction.
 - `analysis`: classify elicited requirements with the SWEBOK vocabulary
-  (functional/nonfunctional, derivation, product/process, scope), suggest
-  per-requirement component allocation, and surface conflicts by SWEBOK's
+  (functional/nonfunctional, derivation, product/process, scope) into one
+  requirements table with a blocked-by column, allocation running under
+  the hood to mint derived rows, plus a conflicts list typed by SWEBOK's
   three conflict types; in-thread only, no writes.
 - `requirements-elicitation`: extract grounded requirements into approved Linear
   work packets before implementation.
