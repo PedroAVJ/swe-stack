@@ -41,8 +41,9 @@ Linear; implementation happens later, usually through
 
 Extract only action-shaped items:
 
-- `Requirement`: a missing capability, field, report, workflow, print detail, or
-  user-visible behavior.
+- `Feature`: a missing capability, field, report, workflow, print detail, or
+  user-visible behavior. (Call it Feature, not Requirement, in all output —
+  and never as a Linear label; labels stay repo-only.)
 - `Bug`: promised/current behavior is wrong, broken, regressed, or producing
   incorrect results.
 - `Needs Info`: the desired behavior, data source, owner, or correctness rule is
@@ -77,7 +78,7 @@ one verified call"), say why the bundle exists and offer the split.
 
 - If Pedro only asks what something means, what is missing, or whether it is
   covered, answer the question first and do not mutate Linear.
-- When running an elicitation pass, create all `Requirement` and `Bug`
+- When running an elicitation pass, create all `Feature` and `Bug`
   candidates as draft issues in one batch. `Needs Info` items become drafts
   too, flagged with their open question. `Deferred` and `Non-actionable`
   items are reported in chat, not created.
@@ -114,18 +115,24 @@ disposition.
 ## Output
 
 After the batch is created, end with a compact result — one line per draft,
-in dependency order, with Linear links:
+in dependency order. Pedro's preferred line shape is exactly: number,
+plain-sentence name (as a Linear link), type, state:
 
 ```markdown
 Elicitation result (N drafts created):
 
-1. TITLE — Requirement|Bug|Needs Info — LINEAR_LINK
+1. [PLAIN SENTENCE NAME](LINEAR_URL) — Feature|Bug — Backlog|Needs Info
 ...
 
 - Covered already (no draft): ISSUE_OR_REASON
 - Deferred / non-actionable: SHORT_LIST_OR_NONE
 - Open questions: QUESTION_OR_NONE
 ```
+
+Before listing anything under "Covered already", read the existing issue's
+full body — a title match is not coverage; if the source decision changes an
+input model or scope the issue doesn't state, that's a new draft, not
+coverage.
 
 When Pedro asks which issue to work on next, recommend ONE draft from the
 batch through the `issue-explainer` lane (a standalone HTML decision
