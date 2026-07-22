@@ -42,7 +42,7 @@ HTML, a deliberately scoped intake audit, or a status summary.
 ## Skills
 
 - `symphony`
-- `evidence-intake`
+- `elicitation`
 - `requirements-elicitation`
 - `requirements-map`
 - `delivery-map`

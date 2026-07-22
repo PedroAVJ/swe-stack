@@ -1,6 +1,6 @@
 {
   "name": "symphony",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "description": "Use Symphony workflow protocols from Codex for Pedro's explicit lifecycle loops.",
   "author": {
     "name": "PedroAVJ",
@@ -23,7 +23,7 @@
   "interface": {
     "displayName": "Symphony",
     "shortDescription": "Elicit, dispatch, and ship work",
-    "longDescription": "Symphony is the local orchestration layer for Pedro's explicit agent lifecycle loops: requirements elicitation into batched draft Linear work packets, implementation dispatch into fresh Codex threads, evidence intake, source-of-truth coverage, Linear issue hygiene, Codex review closeout, worker-thread merge/release proof, Azure DevOps lanes, review artifacts, and stakeholder-facing summaries. It is not a background deploy daemon; ordinary coding and issue-by-issue work stays with normal Codex repo workflows unless Pedro invokes a Symphony lifecycle lane. Codex remains the steward and may delegate visual/presentation passes to Claude.",
+    "longDescription": "Symphony is the local orchestration layer for Pedro's explicit agent lifecycle loops: requirements elicitation into batched draft Linear work packets, implementation dispatch into fresh Codex threads, elicitation session capture, source-of-truth coverage, Linear issue hygiene, Codex review closeout, worker-thread merge/release proof, Azure DevOps lanes, review artifacts, and stakeholder-facing summaries. It is not a background deploy daemon; ordinary coding and issue-by-issue work stays with normal Codex repo workflows unless Pedro invokes a Symphony lifecycle lane. Codex remains the steward and may delegate visual/presentation passes to Claude.",
     "developerName": "PedroAVJ",
     "category": "Productivity",
     "capabilities": [

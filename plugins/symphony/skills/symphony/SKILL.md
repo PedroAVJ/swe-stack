@@ -1,6 +1,6 @@
 ---
 name: symphony
-description: "Use only when Pedro explicitly asks for Symphony or a Symphony-owned meta-workflow: requirements elicitation, implementation dispatch to a fresh thread, evidence intake, source-of-truth audits, Linear lifecycle hygiene, Codex review, merge/release proof, review artifacts, status summaries, or notifications after agent work completes."
+description: "Use only when Pedro explicitly asks for Symphony or a Symphony-owned meta-workflow: requirements elicitation, implementation dispatch to a fresh thread, elicitation session capture, source-of-truth audits, Linear lifecycle hygiene, Codex review, merge/release proof, review artifacts, status summaries, or notifications after agent work completes."
 ---
 
 # Symphony
@@ -57,8 +57,9 @@ extracting requirements and then letting another agent implement them.
 
 Use the narrower Symphony skills when the request names a lane:
 
-- `evidence-intake`: preserve meetings, calls, audio notes,
-  transcripts, Drive/Gmail artifacts, and local media before extraction.
+- `elicitation`: capture elicitation sessions — meetings, calls, voice memos,
+  transcripts, Drive/Gmail artifacts, and local media — as durable evidence
+  before extraction.
 - `requirements-elicitation`: extract grounded requirements into approved Linear
   work packets before implementation.
 - `implementation-dispatch`: create a separate Codex implementation thread from
