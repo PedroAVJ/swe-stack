@@ -63,8 +63,7 @@ Use the narrower Symphony skills when the request names a lane:
 - `analysis`: classify elicited requirements with the SWEBOK vocabulary
   (functional/nonfunctional, derivation, product/process, scope), suggest
   per-requirement component allocation, and surface conflicts by SWEBOK's
-  three conflict types; in-thread only, no writes. Partial —
-  classification, allocation, and negotiation facets only.
+  three conflict types; in-thread only, no writes.
 - `requirements-elicitation`: extract grounded requirements into approved Linear
   work packets before implementation.
 - `implementation-dispatch`: create a separate Codex implementation thread from

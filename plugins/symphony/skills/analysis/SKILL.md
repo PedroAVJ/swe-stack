@@ -1,16 +1,14 @@
 ---
 name: analysis
-description: "Use when Pedro wants Symphony to analyze requirements: apply the SWEBOK definition of a requirement, classify elicited requirements along the kept SWEBOK dimensions, suggest which architecture component each requirement is allocated to, or surface requirement conflicts by SWEBOK's three conflict types. Partial skill: requirement definition, classification, allocation, and negotiation are defined so far."
+description: "Use when Pedro wants Symphony to analyze requirements: apply the SWEBOK definition of a requirement, classify elicited requirements along the kept SWEBOK dimensions, suggest which architecture component each requirement is allocated to, or surface requirement conflicts by SWEBOK's three conflict types."
 ---
 
 # Symphony Requirements Analysis
 
-Status: partial. This skill currently covers the SWEBOK definition of a
-requirement plus three analysis topics: Requirements Classification,
-Requirements Allocation, and Requirements Negotiation. Conceptual modeling
-is deliberately dropped — Pedro's call, do not reintroduce it. The
-remaining analysis topic (formal analysis) is not defined yet — do not
-improvise it from general knowledge; tell Pedro it is not covered.
+This skill covers the SWEBOK definition of a requirement plus three
+analysis topics: Requirements Classification, Requirements Allocation, and
+Requirements Negotiation. Conceptual modeling and formal analysis are
+deliberately dropped — Pedro's call, do not reintroduce either.
 
 ## Reference Vocabulary
 
