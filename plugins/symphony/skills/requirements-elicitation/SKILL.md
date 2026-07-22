@@ -114,20 +114,28 @@ disposition.
 
 ## Output
 
-After the batch is created, end with a compact result — one line per draft,
-in dependency order. Pedro's preferred line shape is exactly: number,
-plain-sentence name (as a Linear link), type, state:
+After the batch is created, end with a compact result. Caveats come FIRST —
+Pedro clears up what didn't fit before evaluating the drafts, so lead with
+everything that is not cleanly an issue, then the draft list. Draft lines are
+exactly: number, plain-sentence name (as a Linear link), type, state:
 
 ```markdown
+Didn't fit / caveats (clear these first):
+
+- ORPHANED_ASK_OR_AMBIGUITY_OR_CONFLICT — what it is, why it isn't a draft
+- Covered already (no draft): ISSUE_OR_REASON
+- Deferred / non-actionable: SHORT_LIST_OR_NONE
+- (none) — when the batch is clean, say so explicitly
+
 Elicitation result (N drafts created):
 
 1. [PLAIN SENTENCE NAME](LINEAR_URL) — Feature|Bug — Backlog|Needs Info
 ...
-
-- Covered already (no draft): ISSUE_OR_REASON
-- Deferred / non-actionable: SHORT_LIST_OR_NONE
-- Open questions: QUESTION_OR_NONE
 ```
+
+Every action-shaped item from the source must end up either as a draft issue
+or as a line in the caveats section Pedro can see — never only inside a
+comment, a scope note, or your head.
 
 Before listing anything under "Covered already", read the existing issue's
 full body — a title match is not coverage; if the source decision changes an
