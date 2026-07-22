@@ -23,7 +23,7 @@ Every explainer must:
 
 1. **Read the topic.** If the user gave one sentence, you have enough — don't over-clarify. If genuinely ambiguous (could be one of two different things), ask once.
 
-2. **Get Claude's design direction.** Use the Claude plugin's design workflow or `scripts/run_design_pass.py` in read-only handoff mode when available. Pass the topic and ask for a committed visual direction for a standalone educational HTML explainer. Follow that direction unless it conflicts with this skill's contract.
+2. **Get Claude's design direction.** Use the Claude plugin's design workflow or `scripts/run_design_pass.py` when available. Pass the topic and ask for a committed visual direction for a standalone educational HTML explainer. Follow that direction unless it conflicts with this skill's contract.
 
 3. **Plan the content before writing CSS.** A good explainer has:
    - A masthead / hero that names the thing
@@ -114,7 +114,7 @@ Every explainer must:
 ## What this skill is not
 
 - Not a tutorial generator. It produces one polished page, not a multi-page site or course.
-- Not for application UI. Use `frontend-design` directly for that.
+- Not for application UI.
 - Not for documents the user wants to edit (use Markdown instead).
 - Not for slide decks (use a different skill or HTML deck framework).
 

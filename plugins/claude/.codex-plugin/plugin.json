@@ -1,7 +1,7 @@
 {
   "name": "claude",
-  "version": "0.1.3",
-  "description": "Use Claude Code from Codex through stewarded, inspectable implementation workflows.",
+  "version": "0.1.4",
+  "description": "Use Claude Code from Codex for stewarded visual explainer workflows.",
   "author": {
     "name": "PedroAVJ",
     "url": "https://github.com/PedroAVJ"
@@ -18,8 +18,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Claude",
-    "shortDescription": "Let Claude design and implement under Codex stewardship",
-    "longDescription": "Use Claude Code as a design and implementation collaborator from Codex while keeping Codex as the steward of prompts, logs, cleanup, verification, and final shipping judgment. The streamed wrapper defaults to claude-opus-4-8 unless a model is explicitly provided. App UI and frontend implementation work must go through Claude's implementation pass first. Includes an explainer skill for polished single-file HTML explainers.",
+    "shortDescription": "Create visual explainers with Claude",
+    "longDescription": "Use Claude Code for visual direction on polished single-file HTML explainers while keeping Codex as the steward of prompts, logs, implementation, and verification.",
     "developerName": "PedroAVJ",
     "category": "Productivity",
     "capabilities": [
@@ -30,9 +30,7 @@
     "privacyPolicyURL": "https://www.anthropic.com/legal/privacy",
     "termsOfServiceURL": "https://www.anthropic.com/legal/consumer-terms",
     "defaultPrompt": [
-      "Make an HTML explainer",
-      "Ask Claude to implement a UI pass",
-      "Run a streamed Claude frontend pass"
+      "Make an HTML explainer"
     ],
     "brandColor": "#D97757",
     "composerIcon": "./assets/claude-mobile-app-icon.jpg",

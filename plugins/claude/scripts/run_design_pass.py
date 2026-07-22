@@ -9,10 +9,7 @@ import time
 
 
 PLUGIN_ROOT = pathlib.Path(__file__).resolve().parents[1]
-DEFAULT_TEMPLATES = {
-    "handoff": PLUGIN_ROOT / "templates" / "frontend-handoff.md",
-    "implement": PLUGIN_ROOT / "templates" / "frontend-implementation.md",
-}
+DEFAULT_TEMPLATE = PLUGIN_ROOT / "templates" / "visual-handoff.md"
 DEFAULT_LOG_ROOT = pathlib.Path.home() / ".local" / "share" / "claude-plugin" / "design-logs"
 DEFAULT_MODEL = "claude-opus-4-8"
 
@@ -59,24 +56,17 @@ def print_event(event):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run a streamed Claude frontend collaboration pass.")
+    parser = argparse.ArgumentParser(description="Run a streamed Claude visual-design handoff.")
     parser.add_argument("--repo", required=True, help="Repo path Claude may read.")
-    parser.add_argument(
-        "--mode",
-        choices=sorted(DEFAULT_TEMPLATES),
-        default="implement",
-        help="Pass type. 'implement' lets Claude own the UI edit pass; 'handoff' is read-only guidance.",
-    )
     parser.add_argument("--prompt-file", default="", help="Base prompt/template file.")
     parser.add_argument("--prompt", default="", help="Extra prompt appended after the prompt file.")
     parser.add_argument("--log-root", default=str(DEFAULT_LOG_ROOT), help="Directory for raw stream and debug logs.")
     parser.add_argument("--model", default=DEFAULT_MODEL, help=f"Claude model alias/name. Defaults to {DEFAULT_MODEL}.")
     parser.add_argument("--effort", default="medium", help="Claude effort level.")
-    parser.add_argument("--allow-edits", action="store_true", help="Allow edit/write tools. Default is read-only handoff.")
     args = parser.parse_args()
 
     repo = pathlib.Path(args.repo).expanduser().resolve()
-    prompt_file = args.prompt_file or str(DEFAULT_TEMPLATES[args.mode])
+    prompt_file = args.prompt_file or str(DEFAULT_TEMPLATE)
     prompt_path = pathlib.Path(prompt_file).expanduser().resolve()
     log_root = pathlib.Path(args.log_root).expanduser().resolve()
     log_root.mkdir(parents=True, exist_ok=True)
@@ -89,12 +79,6 @@ def main():
     if args.prompt:
         prompt = f"{prompt}\n\nProject-specific request:\n{args.prompt}\n"
 
-    tools = "Read,Glob,Grep,LS"
-    permission_mode = "plan"
-    if args.mode == "implement" or args.allow_edits:
-        tools = "Read,Glob,Grep,LS,Edit,MultiEdit,Write"
-        permission_mode = "acceptEdits"
-
     cmd = [
         "claude",
         "-p",
@@ -106,9 +90,9 @@ def main():
         "--add-dir",
         str(repo),
         "--permission-mode",
-        permission_mode,
+        "plan",
         "--tools",
-        tools,
+        "Read,Glob,Grep,LS",
         "--effort",
         args.effort,
     ]
@@ -118,7 +102,7 @@ def main():
 
     print(f"[claude-run] repo: {repo}")
     print(f"[claude-run] codex plugin: {PLUGIN_ROOT}")
-    print(f"[claude-run] mode: {args.mode}")
+    print("[claude-run] mode: read-only visual handoff")
     print(f"[claude-run] stream log: {raw_log}")
     print(f"[claude-run] debug log: {debug_log}")
     print()
