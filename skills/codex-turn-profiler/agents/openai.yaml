@@ -1,4 +1,0 @@
-interface:
-  display_name: "Codex Turn Profiler"
-  short_description: "Explain where Codex task time went"
-  default_prompt: "Use $codex-turn-profiler to explain why this Codex task took so long."
