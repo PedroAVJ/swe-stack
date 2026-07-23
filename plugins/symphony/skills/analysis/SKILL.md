@@ -1,6 +1,6 @@
 ---
 name: analysis
-description: "Use when Pedro wants Symphony to analyze requirements: apply the SWEBOK definition of a requirement and deliver one requirements table (classified along the kept SWEBOK dimensions, with allocation-minted derived rows and a blocked-by column) plus a conflicts list typed by SWEBOK's three conflict types. Allocation runs under the hood, never as output."
+description: "Use when Pedro wants Symphony to analyze requirements: apply the SWEBOK definition of a requirement and deliver one requirements table (classified along the kept SWEBOK dimensions, with allocation-minted derived rows and a blocked-by column) plus a conflicts list typed by SWEBOK's three conflict types. Persist the final analysis as a source-scoped repo ledger when a target product repo is available. Allocation runs under the hood, never as output."
 ---
 
 # Symphony Requirements Analysis
@@ -122,6 +122,50 @@ The deliverable is one requirements table plus a conflicts list:
 - Conflicts: a short list after the table, each entry naming the two rows
   involved and which of the three conflict types it is.
 
+Present the complete table and conflicts list in chat. Do not replace the
+deliverable with a summary, selected rows, or a link to the persisted file.
+Pedro uses the complete candidate set to choose which item to specify next.
+
+## Repository Ledger
+
+When a target product repo is available, persist the final analysis under:
+
+```text
+docs/requirements-analysis/YYYY-MM-DD[-to-YYYY-MM-DD]-topic.md
+```
+
+The date or date range identifies the source evidence, not the day the file is
+written. Use a stable, source-scoped filename so re-analysis of the same source
+updates the same ledger instead of creating copies.
+
+The file begins with:
+
+- an explicit `Analysis only — not approved implementation scope` status;
+- links or repo-relative paths to every canonical source;
+- the analysis date; and
+- a short statement that row IDs are discussion references, not Linear issue
+  IDs, and do not authorize implementation.
+
+Then write the same complete requirements table and conflicts list presented in
+chat. Keep row identifiers stable within an existing ledger. When later evidence
+changes the analysis, update the row with its source attribution intact; never
+silently harden a hedge into an approved specification.
+
+If `docs/requirements-analysis/README.md` does not exist, create it. It must
+explain this lifecycle:
+
+```text
+source evidence -> analysis ledger -> Pedro chooses and specifies a candidate
+-> Linear implementation work
+```
+
+The README must say plainly that analysis ledgers are not approved scope,
+Linear issues, implementation authorization, or delivery-status records.
+
+If there is no target repo, or the environment is read-only, return the complete
+analysis in chat and say that it was not persisted. Do not invent a repo or
+write outside the product repo.
+
 ## Codex Adversarial Pass
 
 Claude and Codex fail in opposite directions on this task: Claude's drift
@@ -154,8 +198,12 @@ on Codex's behalf.
 
 ## Contract
 
-- Analysis is an in-thread classification and allocation pass over already
-  captured or elicited requirements. Answer in chat.
-- The Codex adversarial pass is review-only; it inherits this skill's
-  no-write contract.
-- No Linear writes, no product code, no repo doc writes from this skill.
+- Analysis is a classification and allocation pass over already captured or
+  elicited requirements. Answer in chat and, when possible, persist the final
+  analysis ledger in the target product repo.
+- The only write this skill authorizes is the requirements-analysis Markdown
+  artifact and its directory README. The Codex adversarial pass remains
+  review-only and makes no edits.
+- No Linear writes and no product-code writes from this skill.
+- A candidate row never authorizes implementation. Pedro's follow-up
+  conversation is the specification step; he chooses what proceeds.

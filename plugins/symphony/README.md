@@ -15,6 +15,8 @@ passes, but Claude should not become the source of truth for work status.
 - Dispatch approved Linear work into separate Codex implementation threads so
   Pedro can follow up there with fresh context.
 - Preserve meeting/call/audio evidence before issue extraction.
+- Persist source-scoped requirements-analysis ledgers in product repos so the
+  complete candidate set remains available for Pedro's specification decisions.
 - Keep implementable Linear work separate from bookmarks, vague future topics,
   and canceled/obsolete scope.
 - Run coverage checks as a mode of requirements elicitation so stakeholder
