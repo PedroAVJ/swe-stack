@@ -59,6 +59,17 @@ Before transcript content enters any record or document, verify quotes and
 speaker attribution with the human. If a future recording matters, say so at
 capture time: place the device near the speakers, cut background audio.
 
+## Local Transcript Cache
+
+The CLI caches raw API results in `~/.cache/elevenlabs-transcripts/`
+(respects `XDG_CACHE_HOME`), keyed by audio content hash + request options
+(model, language, diarization, keyterms, …). Re-transcribing the same file
+with the same options is free and works offline — any consumer (any repo,
+any session) shares the cache. The response format is not part of the key:
+one cached result serves `text`, `json`, `diarized_text`, and
+`segments_json` renderings. Changing the model or options is a cache miss
+by design. Pass `--no-cache` to force a live API call.
+
 ## Environment
 
 - `ELEVENLABS_API_KEY` must be set for live API calls.

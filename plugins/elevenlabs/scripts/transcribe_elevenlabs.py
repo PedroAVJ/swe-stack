@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -26,18 +27,6 @@ def _die(message: str, code: int = 1) -> None:
 
 def _warn(message: str) -> None:
     print(f"Warning: {message}", file=sys.stderr)
-
-
-def _ensure_api_key(dry_run: bool) -> str:
-    api_key = os.getenv("ELEVENLABS_API_KEY")
-    if api_key:
-        print("ELEVENLABS_API_KEY is set.", file=sys.stderr)
-        return api_key
-    if dry_run:
-        _warn("ELEVENLABS_API_KEY is not set; dry-run only.")
-        return ""
-    _die("ELEVENLABS_API_KEY is not set. Export it before running.")
-    return ""
 
 
 def _normalize_response_format(value: Optional[str]) -> str:
@@ -217,6 +206,56 @@ def _build_data(args: argparse.Namespace) -> List[tuple[str, str]]:
     return data
 
 
+def _cache_dir() -> Path:
+    xdg = os.environ.get("XDG_CACHE_HOME")
+    root = Path(xdg) if xdg else Path.home() / ".cache"
+    return root / "elevenlabs-transcripts"
+
+
+def _cache_key(
+    path: Optional[Path],
+    source_url: Optional[str],
+    data: List[tuple[str, str]],
+) -> str:
+    # Key = request params + audio content, so a model/option change or a
+    # re-recorded file misses; response_format is rendered locally and is
+    # deliberately excluded — one API result serves every output format.
+    hasher = hashlib.sha256()
+    for key, value in sorted(data):
+        hasher.update(f"{key}={value}\n".encode("utf-8"))
+    if source_url:
+        hasher.update(f"source_url={source_url}".encode("utf-8"))
+    else:
+        assert path is not None
+        with path.open("rb") as handle:
+            for chunk in iter(lambda: handle.read(1 << 20), b""):
+                hasher.update(chunk)
+    return hasher.hexdigest()
+
+
+def _cache_read(key: str) -> Optional[Dict[str, Any]]:
+    cache_path = _cache_dir() / f"{key}.json"
+    if not cache_path.exists():
+        return None
+    try:
+        return json.loads(cache_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        _warn(f"Ignoring unreadable cache entry: {cache_path}")
+        return None
+
+
+def _cache_write(key: str, result: Dict[str, Any]) -> None:
+    try:
+        cache_dir = _cache_dir()
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        cache_path = cache_dir / f"{key}.json"
+        cache_path.write_text(
+            json.dumps(result, indent=2) + "\n", encoding="utf-8"
+        )
+    except OSError as exc:
+        _warn(f"Could not write transcript cache: {exc}")
+
+
 def _request_transcript(
     api_key: str,
     path: Optional[Path],
@@ -253,6 +292,29 @@ def _request_transcript(
     except json.JSONDecodeError as exc:
         _die(f"Response was not valid JSON: {exc}", code=2)
     return {}
+
+
+def _get_transcript(
+    api_key: str,
+    path: Optional[Path],
+    source_url: Optional[str],
+    data: List[tuple[str, str]],
+    timeout_seconds: int,
+    use_cache: bool,
+) -> Dict[str, Any]:
+    key = _cache_key(path, source_url, data) if use_cache else None
+    if key is not None:
+        cached = _cache_read(key)
+        if cached is not None:
+            label = source_url or (path.name if path else "input")
+            print(f"Cache hit for {label} (no API call).", file=sys.stderr)
+            return cached
+    if not api_key:
+        _die("ELEVENLABS_API_KEY is not set. Export it before running.")
+    result = _request_transcript(api_key, path, data, timeout_seconds)
+    if key is not None:
+        _cache_write(key, result)
+    return result
 
 
 def _render_output(result: Dict[str, Any], response_format: str) -> str:
@@ -351,6 +413,11 @@ def main() -> None:
         help="Also print transcript output to stdout",
     )
     parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="Bypass the local transcript cache (always call the API)",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Print the request shape without sending it",
@@ -376,7 +443,9 @@ def main() -> None:
     if args.out and (len(args.audio) > 1 or args.source_url):
         _die("--out supports a single input only")
 
-    api_key = _ensure_api_key(args.dry_run)
+    api_key = os.getenv("ELEVENLABS_API_KEY") or ""
+    if not api_key and args.dry_run:
+        _warn("ELEVENLABS_API_KEY is not set; dry-run only.")
     inputs = [Path(item) for item in args.audio]
     for path in inputs:
         _validate_audio(path)
@@ -394,7 +463,9 @@ def main() -> None:
         return
 
     if args.source_url:
-        result = _request_transcript(api_key, None, data, args.timeout_seconds)
+        result = _get_transcript(
+            api_key, None, args.source_url, data, args.timeout_seconds, not args.no_cache
+        )
         rendered = _render_output(result, args.response_format)
         output_path = _build_output_path("source-url", args.response_format, args.out, args.out_dir)
         output_path.write_text(rendered, encoding="utf-8")
@@ -404,7 +475,9 @@ def main() -> None:
         return
 
     for path in inputs:
-        result = _request_transcript(api_key, path, data, args.timeout_seconds)
+        result = _get_transcript(
+            api_key, path, None, data, args.timeout_seconds, not args.no_cache
+        )
         rendered = _render_output(result, args.response_format)
         output_path = _build_output_path(path.stem, args.response_format, args.out, args.out_dir)
         output_path.write_text(rendered, encoding="utf-8")
