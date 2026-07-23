@@ -15,6 +15,7 @@ repo.
 | `anger-defusal` | Context-gap check before responding to user frustration; verdict-first defusal shape |
 | `bdd-test` | Minimal BDD contracts (Given/When/Then Markdown) paired with Playwright automation |
 | `codex-app-hacking` | Inspect/patch/restore the local macOS Codex desktop app bundle (ASAR, codesigning) |
+| `codex-turn-profiler` | Explain Codex turn latency from rollout timestamps, tool intervals, and TraceLens flamegraphs |
 | `linear` | Linear workspace conventions: no priorities, label by originating repo, plain-English issue references |
 | `mac-health-triage` | Diagnose macOS CPU heat, memory pressure, swap, and stale agent processes |
 | `publish-file` | Publish local files to durable URLs via the publish-file CLI (Vercel Blob) |
